@@ -4,6 +4,10 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 <title>本日の進行表 — 梅原ダンススクール サマーダンスパーティー</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#5C1A2E">
+<link rel="apple-touch-icon" href="icon-192.png">
+<link rel="icon" href="icon-192.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,500&family=Shippori+Mincho:wght@500;700&family=Zen+Kaku+Gothic+New:wght@400;500;700&display=swap" rel="stylesheet">
@@ -863,6 +867,13 @@ const SCHEDULE = {"showStartMin": 840, "showEndMin": 1043, "rehearsalStartMin": 
     updateLiveBlocks();
     renderNextUpBar();
   }, 15000);
+
+  // ---------- PWA: service worker registration ----------
+  if ("serviceWorker" in navigator) {
+    window.addEventListener("load", () => {
+      navigator.serviceWorker.register("sw.js").catch(() => {});
+    });
+  }
 })();
 
 </script>
