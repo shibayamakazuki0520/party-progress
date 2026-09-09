@@ -31,6 +31,31 @@
   --solo-badge-fg: #046A44;
   --shadow: 0 6px 20px rgba(4,106,68,0.10);
   --radius: 14px;
+  --surface: #fff;
+  --reh-chip-bg: #F3EEE9;
+  --star-inactive: #d8c3c9;
+  --done-bg: #eee;
+  --done-fg: #999;
+  color-scheme: light;
+}
+[data-theme="dark"]{
+  --blush-soft: #17201A;
+  --cream: #0D130E;
+  --ink: #EAF3EE;
+  --ink-soft: #8FA69B;
+  --line: #263029;
+  --wine-soft: #7FDDB2;
+  --mini-badge-bg: #3A331A;
+  --mini-badge-fg: #FFD666;
+  --solo-badge-bg: #16362A;
+  --solo-badge-fg: #6FE0AC;
+  --surface: #1C2620;
+  --reh-chip-bg: #232A24;
+  --star-inactive: #3E4C45;
+  --done-bg: #232A24;
+  --done-fg: #7C9186;
+  --shadow: 0 6px 20px rgba(0,0,0,0.4);
+  color-scheme: dark;
 }
 *{box-sizing:border-box;}
 html,body{margin:0;padding:0;}
@@ -56,7 +81,16 @@ header.app-header{
   padding: 14px 20px 16px;
   box-shadow: 0 4px 16px rgba(4,58,38,0.25);
 }
-.header-inner{ max-width: 640px; margin: 0 auto; }
+.header-inner{ max-width: 640px; margin: 0 auto; position: relative; }
+.theme-toggle{
+  position: absolute; top: 0; right: 0;
+  width: 34px; height: 34px; border-radius: 50%;
+  border: none; cursor: pointer;
+  background: rgba(255,255,255,.15); color: #fff;
+  display:flex; align-items:center; justify-content:center;
+}
+.theme-toggle svg{ width:18px; height:18px; }
+.theme-toggle:active{ background: rgba(255,255,255,.3); }
 .eyebrow{
   font-size: 11px; letter-spacing: .12em; color: var(--gold-soft);
   display:flex; align-items:center; gap:8px; margin-bottom: 2px;
@@ -83,7 +117,7 @@ h1.title em{ font-style: italic; color: var(--gold-soft); }
   flex:1; border:none; cursor:pointer;
   padding: 11px 10px; border-radius: 999px;
   font-family: inherit; font-size: 14px; font-weight:700;
-  background: #fff; color: var(--wine-soft);
+  background: var(--surface); color: var(--wine-soft);
   border: 1px solid var(--line);
   transition: all .15s ease;
 }
@@ -136,7 +170,7 @@ main{ max-width: 640px; margin: 0 auto; padding: 16px; }
 }
 
 .fav-card{
-  background:#fff; border-radius: var(--radius); box-shadow: var(--shadow);
+  background:var(--surface); border-radius: var(--radius); box-shadow: var(--shadow);
   padding: 16px 16px 14px; margin-bottom: 12px; border: 1px solid var(--line);
   position: relative; overflow:hidden;
 }
@@ -164,7 +198,7 @@ main{ max-width: 640px; margin: 0 auto; padding: 16px; }
 .fav-phase-block.compact .phase-label{ display: none; }
 .fav-phase-block + .fav-phase-block{ margin-top: 8px; }
 .fav-phase-block.compact + .fav-phase-block.compact{ margin-top: 2px; }
-.badge-compact{ font-size: 12.5px; color: #9c8890; font-weight:600; }
+.badge-compact{ font-size: 12.5px; color: var(--ink-soft); font-weight:600; }
 .phase-label{ font-size:11.5px; font-weight:700; color: var(--wine-soft); letter-spacing:.04em; margin-bottom:4px; }
 .phase-body{ display:flex; align-items:baseline; gap:6px; flex-wrap:wrap; }
 .phase-body .num{ font-size: 38px; font-weight:700; color: var(--wine); font-variant-numeric: tabular-nums; line-height:1; }
@@ -172,20 +206,20 @@ main{ max-width: 640px; margin: 0 auto; padding: 16px; }
 .phase-body .clocktime{ font-size:12.5px; color: var(--ink-soft); }
 .phase-body .badge{ display:inline-block; font-size:14px; font-weight:700; border-radius:999px; padding: 5px 14px; }
 .phase-body .badge.now{ background: rgba(255,255,255,.9); color: var(--wine); }
-.phase-body .badge.done{ background: #eee; color: #999; }
+.phase-body .badge.done{ background: var(--done-bg); color: var(--done-fg); }
 
 /* ---------- search ---------- */
 .search-wrap{ position: relative; margin-bottom: 16px; }
 .search-wrap input{
   width:100%; padding: 12px 16px 12px 40px; border-radius: 999px;
-  border: 1px solid var(--line); background:#fff; font-family:inherit;
+  border: 1px solid var(--line); background:var(--surface); font-family:inherit;
   font-size: 15px; color: var(--ink); box-shadow: var(--shadow);
 }
 .search-wrap input:focus{ outline: 2px solid var(--gold); outline-offset:1px; }
 .search-wrap .icon{ position:absolute; left:14px; top:50%; transform:translateY(-50%); color: var(--wine-soft); }
 .search-results{ margin-bottom: 18px; }
 .search-hint{ font-size:12.5px; color: var(--ink-soft); padding: 2px 4px 10px; }
-.search-item-row{ background:#fff; border-radius:12px; box-shadow:var(--shadow); margin-bottom:8px; border:1px solid var(--line); }
+.search-item-row{ background:var(--surface); border-radius:12px; box-shadow:var(--shadow); margin-bottom:8px; border:1px solid var(--line); }
 
 /* ---------- overview chips ---------- */
 .overview-scroll{
@@ -193,7 +227,7 @@ main{ max-width: 640px; margin: 0 auto; padding: 16px; }
   -webkit-overflow-scrolling: touch;
 }
 .overview-chip{
-  flex-shrink:0; background:#fff; border:1px solid var(--line); border-radius: 12px;
+  flex-shrink:0; background:var(--surface); border:1px solid var(--line); border-radius: 12px;
   padding: 9px 13px; min-width: 108px; text-align:center; cursor:pointer;
   transition: border-color .15s;
 }
@@ -203,7 +237,7 @@ main{ max-width: 640px; margin: 0 auto; padding: 16px; }
 .overview-chip .t2{ font-size:11px; font-weight:700; color: var(--ink-soft); font-variant-numeric: tabular-nums; margin-top:1px; }
 
 /* ---------- timetable list ---------- */
-.part-section{ margin-bottom: 10px; border-radius: var(--radius); overflow:hidden; box-shadow: var(--shadow); background:#fff; border:1px solid var(--line); }
+.part-section{ margin-bottom: 10px; border-radius: var(--radius); overflow:hidden; box-shadow: var(--shadow); background:var(--surface); border:1px solid var(--line); }
 .part-header{
   padding: 14px 16px; cursor:pointer; display:flex; justify-content:space-between; align-items:center; gap:10px;
   background: linear-gradient(135deg, var(--wine) 0%, var(--wine-soft) 100%); color:#fff;
@@ -224,7 +258,7 @@ main{ max-width: 640px; margin: 0 auto; padding: 16px; }
 .item-row-flex{ display:flex; gap:12px; align-items:flex-start; margin-bottom:8px; }
 .item-no-badge{
   flex-shrink:0; width: 44px; height: 44px; border-radius: 10px;
-  background: var(--blush-soft); color: var(--wine-deep);
+  background: var(--blush-soft); color: var(--wine-soft);
   display:flex; align-items:center; justify-content:center;
   font-size: 22px; font-weight:700; font-variant-numeric: tabular-nums;
   border: 1px solid var(--line);
@@ -232,7 +266,7 @@ main{ max-width: 640px; margin: 0 auto; padding: 16px; }
 .item-headinfo{ min-width:0; flex:1; }
 .item-times{ display:flex; align-items:center; gap:6px; flex-wrap:wrap; margin-bottom: 4px; }
 .time-chip{ font-size:14.5px; font-weight:700; font-variant-numeric: tabular-nums; padding: 2px 8px; border-radius: 8px; }
-.time-chip.reh{ color: var(--ink-soft); background: #F3EEE9; }
+.time-chip.reh{ color: var(--ink-soft); background: var(--reh-chip-bg); }
 .time-chip.show{ color: var(--wine); background: var(--blush-soft); }
 .kind-badge{ font-size:10.5px; font-weight:700; border-radius:999px; padding:2px 8px; }
 .kind-badge.mini{ background: var(--mini-badge-bg); color: var(--mini-badge-fg); }
@@ -244,7 +278,7 @@ main{ max-width: 640px; margin: 0 auto; padding: 16px; }
 .performer-teacher{ font-size:12px; color: var(--ink-soft); }
 .star-btn{
   border:none; background:none; cursor:pointer; font-size:21px; line-height:1; flex-shrink:0;
-  color: #d8c3c9; padding: 3px 5px;
+  color: var(--star-inactive); padding: 3px 5px;
 }
 .star-btn.active{ color: var(--gold); }
 .proshow-row{
@@ -286,7 +320,7 @@ main{ max-width: 640px; margin: 0 auto; padding: 16px; }
   padding: 24px;
 }
 .confirm-card{
-  background: #fff; border-radius: 16px; padding: 22px 20px;
+  background: var(--surface); border-radius: 16px; padding: 22px 20px;
   max-width: 340px; width: 100%; box-shadow: 0 12px 32px rgba(4,58,38,0.3);
   text-align:center;
 }
@@ -310,6 +344,7 @@ main{ max-width: 640px; margin: 0 auto; padding: 16px; }
 
 <header class="app-header">
   <div class="header-inner">
+    <button id="themeToggleBtn" class="theme-toggle" aria-label="ダークモード切り替え"></button>
     <div class="eyebrow">
       <svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="4" stroke="currentColor" stroke-width="1.6"/><path d="M12 2v3M12 19v3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M2 12h3M19 12h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
       <span>UMEHARA DANCE SCHOOL</span>
@@ -380,6 +415,7 @@ const SCHEDULE = {"eventId": "umehara-summer-2026", "showStartMin": 840, "showEn
   const EVENT_ID = SCHEDULE.eventId || "event";
   const FAV_KEY = "favorites_" + EVENT_ID;
   const DRIFT_KEY = "drift_" + EVENT_ID;
+  const THEME_KEY = "theme_" + EVENT_ID;
 
   const items = SCHEDULE.items; // merged items with showStart/showEnd/rehearsalStart/rehearsalEnd (absolute minutes)
   const showSections = SCHEDULE.showSections;
@@ -912,6 +948,34 @@ const SCHEDULE = {"eventId": "umehara-summer-2026", "showStartMin": 840, "showEn
       String(now.getHours()).padStart(2, "0") + ":" + String(now.getMinutes()).padStart(2, "0") + ":" + String(now.getSeconds()).padStart(2, "0");
     updateHeaderPhase(now);
   }
+
+  // ---------- dark mode toggle ----------
+  const SUN_ICON = '<svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="4.2" stroke="currentColor" stroke-width="1.8"/><path d="M12 2.5v2.4M12 19.1v2.4M4.2 4.2l1.7 1.7M18.1 18.1l1.7 1.7M2.5 12h2.4M19.1 12h2.4M4.2 19.8l1.7-1.7M18.1 5.9l1.7-1.7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>';
+  const MOON_ICON = '<svg viewBox="0 0 24 24" fill="none"><path d="M20 14.5A8.5 8.5 0 1 1 9.5 4a7 7 0 0 0 10.5 10.5Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>';
+  const themeToggleBtn = document.getElementById("themeToggleBtn");
+  let theme = "light";
+  try {
+    theme = localStorage.getItem(THEME_KEY) || "light";
+  } catch (e) {}
+  function applyTheme() {
+    if (theme === "dark") {
+      document.documentElement.setAttribute("data-theme", "dark");
+      if (themeToggleBtn) themeToggleBtn.innerHTML = SUN_ICON;
+    } else {
+      document.documentElement.removeAttribute("data-theme");
+      if (themeToggleBtn) themeToggleBtn.innerHTML = MOON_ICON;
+    }
+  }
+  if (themeToggleBtn) {
+    themeToggleBtn.addEventListener("click", () => {
+      theme = theme === "dark" ? "light" : "dark";
+      try {
+        localStorage.setItem(THEME_KEY, theme);
+      } catch (e) {}
+      applyTheme();
+    });
+  }
+  applyTheme();
 
   // ---------- back to top ----------
   const backToTopBtn = document.getElementById("backToTopBtn");
