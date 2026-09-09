@@ -1,511 +1,870 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>選手会パーティー - 進行状況</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<title>本日の進行表 — 梅原ダンススクール サマーダンスパーティー</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,500&family=Shippori+Mincho:wght@500;700&family=Zen+Kaku+Gothic+New:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
-  :root {
-    --bg: #faf6ef;
-    --panel: #ffffff;
-    --panel2: #f3ece0;
-    --border: #e6dcc8;
-    --text: #2b2620;
-    --text-dim: #7a6f5c;
-    --text-dim2: #a89d86;
-    --ink: #2b2620;
-    --accent: #b8863b;
-    --on-accent: #ffffff;
-    --current-bg: #f4e6c8;
-    --red: #b3403a;
-  }
-  * { box-sizing: border-box; }
-  body {
-    margin: 0;
-    min-height: 100vh;
-    background: var(--bg);
-    color: var(--text);
-    font-family: 'Hiragino Sans', 'Yu Gothic', system-ui, -apple-system, sans-serif;
-    padding-bottom: 24px;
-  }
-  ::-webkit-scrollbar { width: 8px; }
-  ::-webkit-scrollbar-thumb { background: #d8cdb4; border-radius: 4px; }
-  input:focus-visible, textarea:focus-visible { box-shadow: 0 0 0 2px var(--accent); }
+:root{
+  --wine: #5C1A2E;
+  --wine-deep: #38101F;
+  --wine-soft: #7C2E45;
+  --blush: #F1C7D2;
+  --blush-soft: #F9E4E9;
+  --cream: #FFF8F4;
+  --gold: #C9A15A;
+  --gold-soft: #E7D3AC;
+  --teal: #4F978C;
+  --ink: #2B1116;
+  --ink-soft: #6b4653;
+  --line: #EAD9DD;
+  --mini-badge-bg: #F1E3C8;
+  --mini-badge-fg: #8A6A22;
+  --solo-badge-bg: #EFD3DB;
+  --solo-badge-fg: #7C2E45;
+  --shadow: 0 6px 20px rgba(56,16,31,0.10);
+  --radius: 14px;
+}
+*{box-sizing:border-box;}
+html,body{margin:0;padding:0;}
+body{
+  background: var(--cream);
+  background-image:
+    radial-gradient(ellipse 900px 500px at 10% -10%, var(--blush-soft) 0%, transparent 60%),
+    radial-gradient(ellipse 700px 400px at 110% 10%, var(--gold-soft) 0%, transparent 55%);
+  background-attachment: fixed;
+  color: var(--ink);
+  font-family: "Zen Kaku Gothic New", sans-serif;
+  -webkit-font-smoothing: antialiased;
+  min-height: 100vh;
+  padding-bottom: 48px;
+}
+.heading-font{ font-family: "Cormorant Garamond", "Shippori Mincho", serif; }
 
-  header {
-    padding: 20px 18px 14px;
-    background: #ffffff;
-    border-bottom: 1px solid var(--border);
-    position: sticky;
-    top: 0;
-    z-index: 10;
-  }
-  .header-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; }
-  .eyebrow { font-size: 11px; letter-spacing: .14em; color: var(--accent); font-weight: 700; margin-bottom: 4px; }
-  h1 { font-size: 19px; font-weight: 700; margin: 0; color: var(--ink); }
-  .subtitle { font-size: 12px; color: var(--text-dim); margin-top: 3px; }
+/* ---------- header ---------- */
+header.app-header{
+  position: sticky; top:0; z-index: 40;
+  background: linear-gradient(180deg, var(--wine) 0%, var(--wine-deep) 100%);
+  color: var(--blush-soft);
+  padding: 14px 20px 16px;
+  box-shadow: 0 4px 16px rgba(56,16,31,0.25);
+}
+.header-inner{ max-width: 640px; margin: 0 auto; }
+.eyebrow{
+  font-size: 11px; letter-spacing: .12em; color: var(--gold-soft);
+  display:flex; align-items:center; gap:8px; margin-bottom: 2px;
+}
+.eyebrow svg{ width:12px; height:12px; flex-shrink:0; }
+h1.title{
+  margin: 0; font-size: 26px; font-weight: 600; color: #fff;
+  letter-spacing: .01em;
+}
+h1.title em{ font-style: italic; color: var(--gold-soft); }
+.clock-row{
+  display:flex; align-items:baseline; justify-content: space-between;
+  margin-top: 10px;
+}
+.clock{ font-size: 13px; color: var(--blush-soft); opacity:.92; }
+.clock strong{ font-size:16px; font-weight:700; color:#fff; font-variant-numeric: tabular-nums; }
 
-  .mode-toggle { display: flex; gap: 6px; background: var(--ink); padding: 4px; border-radius: 10px; }
-  .mode-btn {
-    display: flex; align-items: center; border: none; background: transparent;
-    color: #cfc3a8; font-size: 12px; font-weight: 600; padding: 7px 10px;
-    border-radius: 7px; cursor: pointer;
-  }
-  .mode-btn.active { background: var(--accent); color: var(--on-accent); }
-  .viewer-only-tag { display: flex; align-items: center; font-size: 12px; font-weight: 600; color: var(--text-dim); padding: 7px 10px; }
+/* ---------- tabs ---------- */
+.tabs{
+  max-width: 640px; margin: 14px auto 0; padding: 0 16px;
+  display:flex; gap:8px;
+}
+.tab-btn{
+  flex:1; border:none; cursor:pointer;
+  padding: 11px 10px; border-radius: 999px;
+  font-family: inherit; font-size: 14px; font-weight:700;
+  background: #fff; color: var(--wine-soft);
+  border: 1px solid var(--line);
+  transition: all .15s ease;
+}
+.tab-btn.active{
+  background: var(--wine); color:#fff; border-color: var(--wine);
+  box-shadow: var(--shadow);
+}
+.tab-btn .count{
+  display:inline-block; margin-left:5px; font-size:11px;
+  background: rgba(255,255,255,.25); border-radius: 10px; padding: 1px 6px;
+}
+.tab-btn.active .count{ background: rgba(255,255,255,.28); }
+.tab-btn:not(.active) .count{ background: var(--blush-soft); color:var(--wine-soft); }
 
-  .setup-notice {
-    margin-top: 12px; font-size: 11px; line-height: 1.6; color: #7a3b1a;
-    background: #fbe9d5; border: 1px solid #eec89a; border-radius: 8px; padding: 8px 10px;
-  }
+main{ max-width: 640px; margin: 0 auto; padding: 16px; }
 
-  .progress-track { margin-top: 14px; height: 6px; background: var(--panel2); border-radius: 3px; overflow: hidden; }
-  .progress-fill { height: 100%; background: var(--accent); transition: width .4s ease; }
-  .progress-label { margin-top: 6px; font-size: 11px; color: var(--text-dim); letter-spacing: .04em; }
+/* ---------- next-up / drift banners ---------- */
+.next-up-bar{
+  max-width: 640px; margin: 12px auto 0; padding: 10px 16px;
+  background: var(--gold); color: #fff; border-radius: 12px;
+  font-size: 13.5px; font-weight:700; display:flex; align-items:center; gap:8px;
+  box-shadow: var(--shadow);
+}
+.drift-banner{
+  max-width: 640px; margin: 10px auto 0; padding: 9px 16px;
+  background: var(--blush-soft); color: var(--wine-soft); border-radius: 12px;
+  font-size: 12.5px; font-weight:700; display:flex; align-items:center; justify-content:space-between; gap:8px;
+}
+.drift-banner button{
+  border:none; background: var(--wine); color:#fff; border-radius:999px;
+  padding: 4px 12px; font-size:11.5px; font-weight:700; cursor:pointer; flex-shrink:0;
+}
+.sync-btn{
+  border:none; background: none; cursor:pointer; font-size:15px; line-height:1;
+  padding: 2px 6px; margin-left: auto; color: var(--ink-soft); border-radius: 8px;
+}
+.sync-btn:active{ background: var(--blush-soft); }
 
-  .now-card {
-    margin: 16px 16px 0; background: var(--panel); border-radius: 14px; border-left: 6px solid var(--accent);
-    padding: 16px 18px; box-shadow: 0 6px 18px rgba(80,60,20,.06);
-  }
-  .now-label { font-size: 10px; letter-spacing: .2em; color: var(--accent); font-weight: 800; margin-bottom: 8px; }
-  .now-special { font-size: 18px; font-weight: 700; color: var(--ink); line-height: 1.4; }
-  .now-name { font-size: 22px; font-weight: 800; letter-spacing: .01em; color: var(--ink); }
-  .now-sub { font-size: 14px; color: var(--text-dim); margin-top: 4px; }
-  .now-meta { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 12px; }
-  .meta-chip { display: flex; align-items: center; gap: 5px; font-size: 12px; background: var(--panel2); color: var(--text-dim); padding: 5px 10px; border-radius: 20px; }
+/* ---------- favorites tab ---------- */
+.empty-state{
+  text-align:center; padding: 52px 24px; color: var(--ink-soft);
+}
+.empty-state .icon{ font-size: 34px; margin-bottom: 10px; }
+.empty-state p{ margin: 4px 0; line-height:1.7; font-size: 14px; }
+.empty-state button{
+  margin-top: 16px; border:none; cursor:pointer;
+  background: var(--wine); color:#fff; padding: 11px 22px;
+  border-radius: 999px; font-family:inherit; font-weight:700; font-size:14px;
+  box-shadow: var(--shadow);
+}
 
-  .next-strip { margin: 10px 16px 0; display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--text-dim); padding: 8px 14px; background: var(--panel2); border-radius: 10px; }
-  .next-label { font-weight: 800; color: var(--text-dim2); letter-spacing: .1em; font-size: 10px; }
-  .next-text { color: var(--text); }
+.fav-card{
+  background:#fff; border-radius: var(--radius); box-shadow: var(--shadow);
+  padding: 16px 16px 14px; margin-bottom: 12px; border: 1px solid var(--line);
+  position: relative; overflow:hidden;
+}
+.fav-top{ display:flex; align-items:flex-start; gap:10px; }
+.fav-info{ flex:1; min-width:0; }
+.fav-order-label{ font-family: "Zen Kaku Gothic New", sans-serif; font-size: 21px; font-weight:700; color: var(--wine); letter-spacing:.02em; }
+.fav-name{ font-size: 19px; font-weight:700; color: var(--wine-deep); line-height:1.4; margin-top:2px; }
+.fav-meta{ font-size:13px; color: var(--ink-soft); margin-top:3px; line-height:1.5; }
+.honorific{ font-size: 0.68em; font-weight:500; opacity:.75; }
+.fav-star-btn{
+  border:none; background:none; cursor:pointer; font-size:22px; line-height:1;
+  padding:2px 4px; color: var(--gold); flex-shrink:0;
+}
+.fav-phase-block{
+  margin-top: 12px; padding: 12px 14px; border-radius: 12px;
+  background: var(--blush-soft); border: 1px solid var(--line);
+}
+.fav-phase-block.is-now{ background: var(--gold); border-color: var(--gold); }
+.fav-phase-block.is-now .phase-label{ color: #fff; }
+.fav-phase-block.is-done{ opacity:.5; }
+.fav-phase-block.compact{
+  padding: 4px 2px; background: transparent; border: none; box-shadow: none;
+  margin-top: 4px;
+}
+.fav-phase-block.compact .phase-label{ display: none; }
+.fav-phase-block + .fav-phase-block{ margin-top: 8px; }
+.fav-phase-block.compact + .fav-phase-block.compact{ margin-top: 2px; }
+.badge-compact{ font-size: 12.5px; color: #9c8890; font-weight:600; }
+.phase-label{ font-size:11.5px; font-weight:700; color: var(--wine-soft); letter-spacing:.04em; margin-bottom:4px; }
+.phase-body{ display:flex; align-items:baseline; gap:6px; flex-wrap:wrap; }
+.phase-body .num{ font-size: 38px; font-weight:700; color: var(--wine); font-variant-numeric: tabular-nums; line-height:1; }
+.phase-body .unit{ font-size: 14px; color: var(--ink-soft); font-weight:700; }
+.phase-body .clocktime{ font-size:12.5px; color: var(--ink-soft); }
+.phase-body .badge{ display:inline-block; font-size:14px; font-weight:700; border-radius:999px; padding: 5px 14px; }
+.phase-body .badge.now{ background: rgba(255,255,255,.9); color: var(--wine); }
+.phase-body .badge.done{ background: #eee; color: #999; }
 
-  .controls { display: flex; gap: 8px; margin: 14px 16px 0; }
-  .ctrl-btn {
-    flex: 1; display: flex; align-items: center; justify-content: center; gap: 6px;
-    border: 1px solid var(--border); background: var(--panel); color: var(--text);
-    font-size: 14px; font-weight: 700; padding: 12px 10px; border-radius: 10px; cursor: pointer;
-  }
-  .ctrl-btn:disabled { opacity: .4; cursor: default; }
-  .ctrl-primary { background: var(--accent); color: var(--on-accent); border: none; }
-  .ctrl-ghost { flex: 0 0 auto; padding: 12px 14px; color: var(--text-dim); }
+/* ---------- search ---------- */
+.search-wrap{ position: relative; margin-bottom: 16px; }
+.search-wrap input{
+  width:100%; padding: 12px 16px 12px 40px; border-radius: 999px;
+  border: 1px solid var(--line); background:#fff; font-family:inherit;
+  font-size: 15px; color: var(--ink); box-shadow: var(--shadow);
+}
+.search-wrap input:focus{ outline: 2px solid var(--gold); outline-offset:1px; }
+.search-wrap .icon{ position:absolute; left:14px; top:50%; transform:translateY(-50%); color: var(--wine-soft); }
+.search-results{ margin-bottom: 18px; }
+.search-hint{ font-size:12.5px; color: var(--ink-soft); padding: 2px 4px 10px; }
+.search-item-row{ background:#fff; border-radius:12px; box-shadow:var(--shadow); margin-bottom:8px; border:1px solid var(--line); }
 
-  .list-wrap { margin: 16px 12px 0; max-height: 52vh; overflow-y: auto; border-radius: 12px; background: var(--panel2); }
-  .row { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-bottom: 1px solid var(--border); font-size: 13px; cursor: default; }
-  .row.clickable { cursor: pointer; }
-  .row.current { background: var(--current-bg); }
-  .row.done { opacity: .5; }
-  .row-no { width: 22px; font-size: 11px; color: var(--text-dim2); font-weight: 700; flex-shrink: 0; }
-  .row-time { width: 44px; font-size: 12px; color: var(--text-dim); flex-shrink: 0; }
-  .row-body { flex: 1; color: var(--text); line-height: 1.35; }
-  .row-body strong { color: var(--ink); }
-  .row-special { color: var(--text-dim); font-style: italic; }
-  .row-note-preview { font-size: 11px; color: var(--accent); margin-top: 2px; font-weight: 600; }
-  .row-status { flex-shrink: 0; text-align: right; }
-  .badge-now { font-size: 10px; font-weight: 800; background: var(--accent); color: var(--on-accent); padding: 3px 8px; border-radius: 12px; }
-  .badge-done { font-size: 10px; color: var(--text-dim2); }
-  .expand-btn { display: block; margin-top: 4px; font-size: 10px; color: var(--text-dim2); background: transparent; border: none; padding: 0; cursor: pointer; }
+/* ---------- overview chips ---------- */
+.overview-scroll{
+  display:flex; gap:8px; overflow-x:auto; padding: 2px 2px 16px; margin-bottom: 4px;
+  -webkit-overflow-scrolling: touch;
+}
+.overview-chip{
+  flex-shrink:0; background:#fff; border:1px solid var(--line); border-radius: 12px;
+  padding: 9px 13px; min-width: 108px; text-align:center; cursor:pointer;
+  transition: border-color .15s;
+}
+.overview-chip:active{ border-color: var(--wine); }
+.overview-chip .label{ font-size:11px; color:var(--ink-soft); font-weight:700; }
+.overview-chip .t{ font-size:14px; font-weight:700; color: var(--wine); font-variant-numeric: tabular-nums; margin-top:2px; }
+.overview-chip .t2{ font-size:11px; font-weight:700; color: var(--ink-soft); font-variant-numeric: tabular-nums; margin-top:1px; }
 
-  .note-panel { padding: 10px 12px 14px 46px; background: var(--panel); border-bottom: 1px solid var(--border); }
-  .note-panel-label { font-size: 11px; color: var(--text-dim); margin-bottom: 8px; font-weight: 700; }
-  .note-check-row { display: flex; gap: 18px; }
-  .note-check { display: flex; align-items: center; gap: 7px; font-size: 14px; color: var(--text); cursor: pointer; }
-  .note-check input[type="checkbox"] { width: 20px; height: 20px; accent-color: var(--accent); cursor: pointer; }
+/* ---------- timetable list ---------- */
+.part-section{ margin-bottom: 10px; border-radius: var(--radius); overflow:hidden; box-shadow: var(--shadow); background:#fff; border:1px solid var(--line); }
+.part-header{
+  padding: 14px 16px; cursor:pointer; display:flex; justify-content:space-between; align-items:center; gap:10px;
+  background: linear-gradient(135deg, var(--wine) 0%, var(--wine-soft) 100%); color:#fff;
+}
+.part-header .htitle{ font-size:15px; font-weight:700; }
+.part-header .htitle small{ display:block; font-weight:400; font-size:11.5px; color: var(--gold-soft); margin-top:2px; }
+.part-header .chevron{ transition: transform .2s; flex-shrink:0; }
+.part-header.open .chevron{ transform: rotate(180deg); }
+.part-body{ display:none; }
+.part-body.open{ display:block; }
+.break-row{
+  padding: 10px 16px; background: var(--blush-soft); color: var(--wine-soft);
+  font-size:12.5px; font-weight:700; display:flex; justify-content:space-between;
+  border-bottom: 1px solid var(--line);
+}
+.item-row{ padding: 14px 16px; border-bottom: 1px solid var(--line); }
+.item-row:last-child{ border-bottom:none; }
+.item-row-flex{ display:flex; gap:12px; align-items:flex-start; margin-bottom:8px; }
+.item-no-badge{
+  flex-shrink:0; width: 44px; height: 44px; border-radius: 10px;
+  background: var(--blush-soft); color: var(--wine-deep);
+  display:flex; align-items:center; justify-content:center;
+  font-size: 22px; font-weight:700; font-variant-numeric: tabular-nums;
+  border: 1px solid var(--line);
+}
+.item-headinfo{ min-width:0; flex:1; }
+.item-times{ display:flex; align-items:center; gap:6px; flex-wrap:wrap; margin-bottom: 4px; }
+.time-chip{ font-size:14.5px; font-weight:700; font-variant-numeric: tabular-nums; padding: 2px 8px; border-radius: 8px; }
+.time-chip.reh{ color: var(--ink-soft); background: #F3EEE9; }
+.time-chip.show{ color: var(--wine); background: var(--blush-soft); }
+.kind-badge{ font-size:10.5px; font-weight:700; border-radius:999px; padding:2px 8px; }
+.kind-badge.mini{ background: var(--mini-badge-bg); color: var(--mini-badge-fg); }
+.kind-badge.solo{ background: var(--solo-badge-bg); color: var(--solo-badge-fg); }
+.item-event{ font-size:13.5px; color: var(--ink-soft); }
+.performer-row{ display:flex; align-items:center; justify-content:space-between; gap:8px; padding: 6px 0 6px 56px; }
+.performer-info{ min-width:0; }
+.performer-name{ font-size:15px; font-weight:700; color: var(--ink); }
+.performer-teacher{ font-size:12px; color: var(--ink-soft); }
+.star-btn{
+  border:none; background:none; cursor:pointer; font-size:21px; line-height:1; flex-shrink:0;
+  color: #d8c3c9; padding: 3px 5px;
+}
+.star-btn.active{ color: var(--gold); }
+.proshow-row{
+  padding: 14px 16px; background: var(--wine-deep); color: var(--gold-soft);
+  font-size:13px; font-weight:700; text-align:center;
+}
+.proshow-row small{ display:block; font-weight:400; color: var(--blush-soft); margin-top:3px; font-size:11.5px;}
+.proshow-row.pro-rehearsal-row{ background: var(--wine-soft); color: var(--gold-soft); }
 
-  footer { text-align: center; font-size: 11px; color: var(--text-dim2); margin-top: 14px; }
-  footer .err { color: var(--red); font-weight: 700; }
+/* ---------- footer ---------- */
+.credit-wrap{ max-width: 640px; margin: 28px auto 0; padding: 0 16px; display:flex; justify-content:center; }
+.credit-card{
+  background: #14151c; border-radius: 18px; padding: 16px 28px;
+  box-shadow: 0 10px 26px rgba(0,0,0,.28); text-align:center;
+}
+.credit-card .mark-row{ display:flex; align-items:center; justify-content:center; gap:10px; }
+.credit-card svg{ width:22px; height:22px; flex-shrink:0; }
+.credit-card .brand{
+  font-family: "Cormorant Garamond", "Shippori Mincho", serif;
+  font-size: 17px; font-weight:700; letter-spacing:.14em; color:#F5EFE6;
+}
+.credit-card .tagline{ margin-top:7px; font-size:11.5px; color:#9a97a3; letter-spacing:.02em; }
 
-  .nexus-credit { display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: 16px; padding-top: 12px; border-top: 1px solid var(--border); }
-  .nexus-word { font-size: 10px; letter-spacing: .1em; font-weight: 700; color: var(--ink); }
-  .nexus-tagline { display: block; font-size: 9px; letter-spacing: .03em; color: var(--text-dim2); margin-top: 1px; }
+.back-to-top{
+  position: fixed; right: 18px; bottom: 20px; z-index: 50;
+  width: 46px; height: 46px; border-radius: 50%; border: none; cursor: pointer;
+  background: var(--wine); color: #fff; box-shadow: 0 6px 16px rgba(56,16,31,0.35);
+  display:flex; align-items:center; justify-content:center;
+  opacity: 0; visibility: hidden; transform: translateY(10px);
+  transition: opacity .2s ease, transform .2s ease, visibility .2s;
+}
+.back-to-top.visible{ opacity: 1; visibility: visible; transform: translateY(0); }
+.back-to-top svg{ width: 20px; height: 20px; }
 
-  .pin-overlay { position: fixed; inset: 0; background: rgba(43,38,32,.5); display: flex; align-items: center; justify-content: center; z-index: 50; padding: 20px; }
-  .pin-card { width: 100%; max-width: 280px; background: var(--panel); border: 1px solid var(--border); border-radius: 14px; padding: 20px; box-shadow: 0 12px 32px rgba(43,38,32,.25); }
-  .pin-title { font-size: 13px; font-weight: 700; color: var(--text); margin-bottom: 10px; }
-  .pin-input { width: 100%; font-size: 20px; letter-spacing: .3em; text-align: center; padding: 10px 8px; border-radius: 8px; border: 1px solid var(--border); background: var(--bg); color: var(--text); outline: none; }
-  .pin-error { font-size: 11px; color: var(--red); margin-top: 6px; }
-  .pin-btn-row { display: flex; gap: 8px; margin-top: 14px; }
-
-  .icon { display: inline-block; vertical-align: -2px; }
+@media (min-width: 480px){
+  h1.title{ font-size: 30px; }
+}
 </style>
 </head>
 <body>
-<div id="app"></div>
+
+<header class="app-header">
+  <div class="header-inner">
+    <div class="eyebrow">
+      <svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="4" stroke="currentColor" stroke-width="1.6"/><path d="M12 2v3M12 19v3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M2 12h3M19 12h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+      <span>UMEHARA DANCE SCHOOL</span>
+    </div>
+    <h1 class="title heading-font">本日の<em>進行表</em></h1>
+    <div class="clock-row">
+      <div class="clock">現在時刻 <strong id="liveClock">--:--</strong></div>
+      <div class="clock" id="phaseLabel">開始前</div>
+    </div>
+  </div>
+</header>
+
+<div class="tabs">
+  <button class="tab-btn active" data-tab="fav" id="tabBtnFav">お気に入り<span class="count" id="favCount">0</span></button>
+  <button class="tab-btn" data-tab="all" id="tabBtnAll">全体タイムテーブル</button>
+</div>
+
+<div id="nextUpBar" class="next-up-bar" style="display:none;"></div>
+<div id="driftBanner" class="drift-banner" style="display:none;"></div>
+
+<main>
+  <section id="panelFav"></section>
+  <section id="panelAll" style="display:none;"></section>
+</main>
+
+<footer class="credit-wrap">
+  <div class="credit-card">
+    <div class="mark-row">
+      <svg viewBox="0 0 40 40" fill="none">
+        <path d="M20 6 L34 20 L20 34 L6 20 Z" stroke="var(--gold)" stroke-width="1.3"/>
+        <path d="M20 6 L20 34 M6 20 L34 20" stroke="var(--gold)" stroke-width="1.3"/>
+        <circle cx="20" cy="6" r="2.6" fill="#14151c" stroke="var(--gold)" stroke-width="1.4"/>
+        <circle cx="20" cy="34" r="2.6" fill="#14151c" stroke="var(--gold)" stroke-width="1.4"/>
+        <circle cx="6" cy="20" r="2.6" fill="#14151c" stroke="var(--teal)" stroke-width="1.4"/>
+        <circle cx="34" cy="20" r="2.6" fill="#14151c" stroke="var(--teal)" stroke-width="1.4"/>
+        <circle cx="20" cy="20" r="4.2" fill="#14151c" stroke="var(--gold)" stroke-width="1.4"/>
+        <circle cx="20" cy="20" r="1.6" fill="var(--gold)"/>
+      </svg>
+      <span class="brand">NEXUS ENTERTAINMENT</span>
+    </div>
+    <div class="tagline">進行も、演出も。窓口はひとつに。</div>
+  </div>
+</footer>
+
+<button id="backToTopBtn" class="back-to-top" aria-label="上に戻る">
+  <svg viewBox="0 0 24 24" fill="none"><path d="M12 19V5M12 5l-6 6M12 5l6 6" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+</button>
 
 <script>
-/* ============ 設定 ============ */
-const GAS_ENDPOINT = "https://script.google.com/macros/s/AKfycbxyuY6OH86TUAKIO3JhFjrLcodAQDVUjrziu-moOzDIEBGdUGN56OzlNDoWHDe1u4Ux/exec";
-const STAFF_PIN = "2929"; // 運営モードの合言葉。必要に応じて変更してください
-const POLL_MS = 4000;
+const SCHEDULE = {"showStartMin": 840, "showEndMin": 1043, "rehearsalStartMin": 550, "showSections": [{"type": "break", "label": "ドアオープン", "startAbs": 840, "endAbs": 850}, {"type": "part_start", "label": "第1部 〜 ミニ＆ソロデモンストレーション 〜", "partIndex": 0, "startAbs": 850}, {"type": "part_start", "label": "第2部 〜 ソロデモンストレーション 〜", "partIndex": 1, "startAbs": 910}, {"type": "part_start", "label": "第3部 〜 ソロデモンストレーション 〜", "partIndex": 2, "startAbs": 980}], "rehearsalSections": [{"type": "entry", "label": "入室開始", "startAbs": 550, "endAbs": 585}, {"type": "part_start", "label": "第1部 〜 ミニ＆ソロデモンストレーション 〜", "partIndex": 0, "startAbs": 585}, {"type": "part_start", "label": "第2部 〜 ソロデモンストレーション 〜", "partIndex": 1, "startAbs": 635}, {"type": "part_start", "label": "第3部 〜 ソロデモンストレーション 〜", "partIndex": 2, "startAbs": 695}, {"type": "pro_rehearsal", "label": "プロ リハーサル", "startAbs": 760, "endAbs": 840}], "items": [{"partIndex": 0, "no": 1, "kind": "mini", "event": "Waltz", "performers": [{"name": "前川和枝", "teacher": "村澤俊也", "studio": null}], "duration": 2, "rehearsalStart": 585, "rehearsalEnd": 587, "showStart": 850, "showEnd": 852}, {"partIndex": 0, "no": 2, "kind": "mini", "event": "Rumba", "performers": [{"name": "池田英世", "teacher": "斎木智子", "studio": "dance studio VIVAILA"}], "duration": 2, "rehearsalStart": 587, "rehearsalEnd": 589, "showStart": 852, "showEnd": 854}, {"partIndex": 0, "no": 3, "kind": "mini", "event": "Waltz", "performers": [{"name": "谷本信代", "teacher": "村澤俊也", "studio": null}], "duration": 2, "rehearsalStart": 589, "rehearsalEnd": 591, "showStart": 854, "showEnd": 856}, {"partIndex": 0, "no": 4, "kind": "mini", "event": "Tango", "performers": [{"name": "小林廣人", "teacher": "松永ゆかり", "studio": "アカデミーオブダンス.ヨコタ"}], "duration": 2, "rehearsalStart": 591, "rehearsalEnd": 593, "showStart": 856, "showEnd": 858}, {"partIndex": 0, "no": 5, "kind": "mini", "event": "Waltz", "performers": [{"name": "吉田美千代", "teacher": "小西雅司", "studio": "小西雅司ダンススタジオ"}], "duration": 2, "rehearsalStart": 593, "rehearsalEnd": 595, "showStart": 858, "showEnd": 860}, {"partIndex": 0, "no": 1, "kind": "solo", "event": "Show Dance", "performers": [{"name": "江口裕子", "teacher": "金原亮司", "studio": "小西雅司ダンススタジオ"}], "duration": 3, "rehearsalStart": 595, "rehearsalEnd": 598, "showStart": 860, "showEnd": 863}, {"partIndex": 0, "no": 2, "kind": "solo", "event": "Show Dance", "performers": [{"name": "若園さくら", "teacher": "岩田健司", "studio": "岩田健司ダンススタジオ"}], "duration": 3, "rehearsalStart": 598, "rehearsalEnd": 601, "showStart": 863, "showEnd": 866}, {"partIndex": 0, "no": 3, "kind": "solo", "event": "Rumba", "performers": [{"name": "Natty", "teacher": "村澤俊也", "studio": null}], "duration": 3, "rehearsalStart": 601, "rehearsalEnd": 604, "showStart": 866, "showEnd": 869}, {"partIndex": 0, "no": 4, "kind": "solo", "event": "Recuerdo", "performers": [{"name": "吉田万樹子", "teacher": "瀬内英幸", "studio": "dance studio VIVAILA"}], "duration": 3, "rehearsalStart": 604, "rehearsalEnd": 607, "showStart": 869, "showEnd": 872}, {"partIndex": 0, "no": 5, "kind": "solo", "event": "Cavatina", "performers": [{"name": "伴鉱司", "teacher": "川澄清香", "studio": "サワダダンススタジオ"}], "duration": 3, "rehearsalStart": 607, "rehearsalEnd": 610, "showStart": 872, "showEnd": 875}, {"partIndex": 0, "no": 6, "kind": "solo", "event": "Slow Foxtrot", "performers": [{"name": "横山朝子", "teacher": "柴山和樹", "studio": "DANCE STUDIO B&G"}], "duration": 3, "rehearsalStart": 610, "rehearsalEnd": 613, "showStart": 875, "showEnd": 878}, {"partIndex": 0, "no": 7, "kind": "solo", "event": "Slow Foxtrot", "performers": [{"name": "松本由紀子", "teacher": "村澤俊也", "studio": null}], "duration": 3, "rehearsalStart": 613, "rehearsalEnd": 616, "showStart": 878, "showEnd": 881}, {"partIndex": 0, "no": 8, "kind": "solo", "event": "Slow Foxtrot", "performers": [{"name": "近田弘子", "teacher": "西田克義", "studio": "ニシダダンススタジオ"}], "duration": 3, "rehearsalStart": 616, "rehearsalEnd": 619, "showStart": 881, "showEnd": 884}, {"partIndex": 0, "no": 9, "kind": "solo", "event": "Show Dance", "performers": [{"name": "蘭洋子", "teacher": "永田勝規", "studio": "永田勝規ダンススタジオ"}], "duration": 3, "rehearsalStart": 619, "rehearsalEnd": 622, "showStart": 884, "showEnd": 887}, {"partIndex": 0, "no": 10, "kind": "solo", "event": "Tango", "performers": [{"name": "中西恵美子", "teacher": "村澤俊也", "studio": null}], "duration": 3, "rehearsalStart": 622, "rehearsalEnd": 625, "showStart": 887, "showEnd": 890}, {"partIndex": 0, "no": 11, "kind": "solo", "event": "Slow Foxtrot", "performers": [{"name": "生田恵津子", "teacher": "岩田健司", "studio": "岩田健司ダンススタジオ"}], "duration": 3, "rehearsalStart": 625, "rehearsalEnd": 628, "showStart": 890, "showEnd": 893}, {"partIndex": 0, "no": 12, "kind": "solo", "event": "Rumba", "performers": [{"name": "多羅尾晴子", "teacher": "小西雅司", "studio": "小西雅司ダンススタジオ"}], "duration": 3, "rehearsalStart": 628, "rehearsalEnd": 631, "showStart": 893, "showEnd": 896}, {"partIndex": 0, "no": 13, "kind": "solo", "event": "Slow Foxtrot", "performers": [{"name": "井上礼子", "teacher": "村澤俊也", "studio": null}], "duration": 3, "rehearsalStart": 631, "rehearsalEnd": 634, "showStart": 896, "showEnd": 899}, {"partIndex": 0, "no": 14, "kind": "solo", "event": "Slow Foxtrot", "performers": [{"name": "大平良子", "teacher": "梅原和之", "studio": null}], "duration": 3, "rehearsalStart": 634, "rehearsalEnd": 637, "showStart": 899, "showEnd": 902}, {"partIndex": 1, "no": 1, "kind": "solo", "event": "Rumba", "performers": [{"name": "入江真帆", "teacher": "村澤俊也", "studio": null}], "duration": 3, "rehearsalStart": 635, "rehearsalEnd": 638, "showStart": 910, "showEnd": 913}, {"partIndex": 1, "no": 2, "kind": "solo", "event": "Tango", "performers": [{"name": "御崎早苗", "teacher": "太田雅士", "studio": "ニシダダンススタジオ"}], "duration": 3, "rehearsalStart": 638, "rehearsalEnd": 641, "showStart": 913, "showEnd": 916}, {"partIndex": 1, "no": 3, "kind": "solo", "event": "Tango", "performers": [{"name": "服部初枝", "teacher": "梅原和之", "studio": null}], "duration": 3, "rehearsalStart": 641, "rehearsalEnd": 644, "showStart": 916, "showEnd": 919}, {"partIndex": 1, "no": 4, "kind": "solo", "event": "Waltz", "performers": [{"name": "小林廣人", "teacher": "松永ゆかり", "studio": "アカデミーオブダンス.ヨコタ"}], "duration": 3, "rehearsalStart": 644, "rehearsalEnd": 647, "showStart": 919, "showEnd": 922}, {"partIndex": 1, "no": 5, "kind": "solo", "event": "Show Dance", "performers": [{"name": "飯田峰子", "teacher": "永田勝規", "studio": "永田勝規ダンススタジオ"}], "duration": 3, "rehearsalStart": 647, "rehearsalEnd": 650, "showStart": 922, "showEnd": 925}, {"partIndex": 1, "no": 6, "kind": "solo", "event": "Slow Foxtrot", "performers": [{"name": "村上美幸", "teacher": "村澤俊也", "studio": null}], "duration": 3, "rehearsalStart": 650, "rehearsalEnd": 653, "showStart": 925, "showEnd": 928}, {"partIndex": 1, "no": 7, "kind": "solo", "event": "Waltz", "performers": [{"name": "矢木郁子", "teacher": "岩田健司", "studio": "岩田健司ダンススタジオ"}], "duration": 3, "rehearsalStart": 653, "rehearsalEnd": 656, "showStart": 928, "showEnd": 931}, {"partIndex": 1, "no": 8, "kind": "solo", "event": "Show Dance", "performers": [{"name": "江口裕子", "teacher": "小西雅司", "studio": "小西雅司ダンススタジオ"}], "duration": 3, "rehearsalStart": 656, "rehearsalEnd": 659, "showStart": 931, "showEnd": 934}, {"partIndex": 1, "no": 9, "kind": "solo", "event": "Samba", "performers": [{"name": "木村美恵子", "teacher": "西田克義", "studio": "ニシダダンススタジオ"}], "duration": 3, "rehearsalStart": 659, "rehearsalEnd": 662, "showStart": 934, "showEnd": 937}, {"partIndex": 1, "no": 10, "kind": "solo", "event": "Viennese Waltz", "performers": [{"name": "田村多津美", "teacher": "村澤俊也", "studio": null}], "duration": 3, "rehearsalStart": 662, "rehearsalEnd": 665, "showStart": 937, "showEnd": 940}, {"partIndex": 1, "no": 11, "kind": "solo", "event": "Show Dance", "performers": [{"name": "服部篤", "teacher": "川澄清香", "studio": "Dance Space SAKAE"}], "duration": 3, "rehearsalStart": 665, "rehearsalEnd": 668, "showStart": 940, "showEnd": 943}, {"partIndex": 1, "no": 12, "kind": "solo", "event": "Rumba", "performers": [{"name": "澤野聖子", "teacher": "永田勝規", "studio": "永田勝規ダンススタジオ"}], "duration": 3, "rehearsalStart": 668, "rehearsalEnd": 671, "showStart": 943, "showEnd": 946}, {"partIndex": 1, "no": 13, "kind": "solo", "event": "Slow Foxtrot", "performers": [{"name": "小杉依子", "teacher": "村澤俊也", "studio": null}], "duration": 3, "rehearsalStart": 671, "rehearsalEnd": 674, "showStart": 946, "showEnd": 949}, {"partIndex": 1, "no": 14, "kind": "solo", "event": "Rumba", "performers": [{"name": "伊藤麻子", "teacher": "小宮一浩", "studio": "DANCE STUDIO B&G"}], "duration": 3, "rehearsalStart": 674, "rehearsalEnd": 677, "showStart": 949, "showEnd": 952}, {"partIndex": 1, "no": 15, "kind": "solo", "event": "Tango", "performers": [{"name": "織田冨美子", "teacher": "小西雅司", "studio": "小西雅司ダンススタジオ"}], "duration": 3, "rehearsalStart": 677, "rehearsalEnd": 680, "showStart": 952, "showEnd": 955}, {"partIndex": 1, "no": 16, "kind": "solo", "event": "Waltz", "performers": [{"name": "堀友子", "teacher": "岩田健司", "studio": "岩田健司ダンススタジオ"}], "duration": 3, "rehearsalStart": 680, "rehearsalEnd": 683, "showStart": 955, "showEnd": 958}, {"partIndex": 1, "no": 17, "kind": "solo", "event": "Show Dance", "performers": [{"name": "坂口恵子", "teacher": "瀬内英幸", "studio": "dance studio VIVAILA"}], "duration": 3, "rehearsalStart": 683, "rehearsalEnd": 686, "showStart": 958, "showEnd": 961}, {"partIndex": 1, "no": 18, "kind": "solo", "event": "Show Dance", "performers": [{"name": "大平良子", "teacher": "澤田健一", "studio": "サワダダンススタジオ"}], "duration": 3, "rehearsalStart": 686, "rehearsalEnd": 689, "showStart": 961, "showEnd": 964}, {"partIndex": 1, "no": 19, "kind": "solo", "event": "Show Dance", "performers": [{"name": "間瀬美予子", "teacher": "梅原和之", "studio": null}], "duration": 3, "rehearsalStart": 689, "rehearsalEnd": 692, "showStart": 964, "showEnd": 967}, {"partIndex": 2, "no": 1, "kind": "solo", "event": "Slow Foxtrot", "performers": [{"name": "山下美津子", "teacher": "村澤俊也", "studio": null}], "duration": 3, "rehearsalStart": 695, "rehearsalEnd": 698, "showStart": 980, "showEnd": 983}, {"partIndex": 2, "no": 2, "kind": "solo", "event": "Show Dance", "performers": [{"name": "近松眞由美", "teacher": "永田勝規", "studio": "永田勝規ダンススタジオ"}], "duration": 3, "rehearsalStart": 698, "rehearsalEnd": 701, "showStart": 983, "showEnd": 986}, {"partIndex": 2, "no": 3, "kind": "solo", "event": "Slow Foxtrot", "performers": [{"name": "浅井廣子", "teacher": "柴山和樹", "studio": "DANCE STUDIO B&G"}], "duration": 3, "rehearsalStart": 701, "rehearsalEnd": 704, "showStart": 986, "showEnd": 989}, {"partIndex": 2, "no": 4, "kind": "solo", "event": "Slow Foxtrot", "performers": [{"name": "吉田美千代", "teacher": "小西雅司", "studio": "小西雅司ダンススタジオ"}], "duration": 3, "rehearsalStart": 704, "rehearsalEnd": 707, "showStart": 989, "showEnd": 992}, {"partIndex": 2, "no": 5, "kind": "solo", "event": "QuickStep", "performers": [{"name": "雪いく子", "teacher": "岩田健司", "studio": "岩田健司ダンススタジオ"}], "duration": 3, "rehearsalStart": 707, "rehearsalEnd": 710, "showStart": 992, "showEnd": 995}, {"partIndex": 2, "no": 6, "kind": "solo", "event": "Slow Foxtrot", "performers": [{"name": "小杉依子", "teacher": "梅原和之", "studio": null}], "duration": 3, "rehearsalStart": 710, "rehearsalEnd": 713, "showStart": 995, "showEnd": 998}, {"partIndex": 2, "no": 7, "kind": "solo", "event": "Samba", "performers": [{"name": "新美龍人", "teacher": "平岩英里", "studio": "DANCE STUDIO B&G"}], "duration": 3, "rehearsalStart": 713, "rehearsalEnd": 716, "showStart": 998, "showEnd": 1001}, {"partIndex": 2, "no": 8, "kind": "solo", "event": "Tango", "performers": [{"name": "小野和子", "teacher": "村澤俊也", "studio": null}], "duration": 3, "rehearsalStart": 716, "rehearsalEnd": 719, "showStart": 1001, "showEnd": 1004}, {"partIndex": 2, "no": 9, "kind": "solo", "event": "Slow Foxtrot", "performers": [{"name": "友成和子", "teacher": "太田雅士", "studio": "ニシダダンススタジオ"}], "duration": 3, "rehearsalStart": 719, "rehearsalEnd": 722, "showStart": 1004, "showEnd": 1007}, {"partIndex": 2, "no": 10, "kind": "solo", "event": "ChaChaCha", "performers": [{"name": "石田和枝", "teacher": "金原亮司", "studio": "小西雅司ダンススタジオ"}], "duration": 3, "rehearsalStart": 722, "rehearsalEnd": 725, "showStart": 1007, "showEnd": 1010}, {"partIndex": 2, "no": 11, "kind": "solo", "event": "海から生まれしもの", "performers": [{"name": "小島博子", "teacher": "瀬内英幸", "studio": "dance studio VIVAILA"}], "duration": 3, "rehearsalStart": 725, "rehearsalEnd": 728, "showStart": 1010, "showEnd": 1013}, {"partIndex": 2, "no": 12, "kind": "solo", "event": "Show Dance", "performers": [{"name": "蘭洋子", "teacher": "永田勝規", "studio": "永田勝規ダンススタジオ"}], "duration": 3, "rehearsalStart": 728, "rehearsalEnd": 731, "showStart": 1013, "showEnd": 1016}, {"partIndex": 2, "no": 13, "kind": "solo", "event": "Rumba", "performers": [{"name": "柴田訓枝", "teacher": "横田哲也", "studio": "アカデミーオブダンス.ヨコタ"}], "duration": 3, "rehearsalStart": 731, "rehearsalEnd": 734, "showStart": 1016, "showEnd": 1019}, {"partIndex": 2, "no": 14, "kind": "solo", "event": "Waltz", "performers": [{"name": "間瀬多美", "teacher": "西田克義", "studio": "ニシダダンススタジオ"}], "duration": 3, "rehearsalStart": 734, "rehearsalEnd": 737, "showStart": 1019, "showEnd": 1022}, {"partIndex": 2, "no": 15, "kind": "solo", "event": "Show Dance", "performers": [{"name": "大平良子", "teacher": "小宮一浩", "studio": "DANCE STUDIO B&G"}], "duration": 3, "rehearsalStart": 737, "rehearsalEnd": 740, "showStart": 1022, "showEnd": 1025}, {"partIndex": 2, "no": 16, "kind": "solo", "event": "Rumba", "performers": [{"name": "服部篤", "teacher": "寺尾理江", "studio": "サワダダンススタジオ"}], "duration": 3, "rehearsalStart": 740, "rehearsalEnd": 743, "showStart": 1025, "showEnd": 1028}, {"partIndex": 2, "no": 17, "kind": "solo", "event": "Slow Foxtrot", "performers": [{"name": "若園さくら", "teacher": "岩田健司", "studio": "岩田健司ダンススタジオ"}], "duration": 3, "rehearsalStart": 743, "rehearsalEnd": 746, "showStart": 1028, "showEnd": 1031}, {"partIndex": 2, "no": 18, "kind": "solo", "event": "Waltz", "performers": [{"name": "入江真帆", "teacher": "村澤俊也", "studio": null}], "duration": 3, "rehearsalStart": 746, "rehearsalEnd": 749, "showStart": 1031, "showEnd": 1034}, {"partIndex": 2, "no": 19, "kind": "solo", "event": "Tango", "performers": [{"name": "多羅尾晴子", "teacher": "小西雅司", "studio": "小西雅司ダンススタジオ"}], "duration": 3, "rehearsalStart": 749, "rehearsalEnd": 752, "showStart": 1034, "showEnd": 1037}, {"partIndex": 2, "no": 20, "kind": "solo", "event": "ChaChaCha", "performers": [{"name": "日比谷節子", "teacher": "澤田健一", "studio": "サワダダンススタジオ"}], "duration": 3, "rehearsalStart": 752, "rehearsalEnd": 755, "showStart": 1037, "showEnd": 1040}, {"partIndex": 2, "no": 21, "kind": "solo", "event": "Show Dance", "performers": [{"name": "増井由美", "teacher": "梅原和之", "studio": null}], "duration": 3, "rehearsalStart": 755, "rehearsalEnd": 758, "showStart": 1040, "showEnd": 1043}], "eventId": "umehara-summer-2026"};
+</script>
+<script>
+(function () {
+  "use strict";
 
-/* ============ 項目ごとのオプション欄 ON/OFF ============ */
-// このパーティーで写真・DVD注文の管理が必要かどうかをここで切り替える。
-// 両方無いパーティーなら両方 false にすれば、行の展開ボタンごと出なくなる。
-const OPTIONS_ENABLED = { photo: true, dvd: true };
+  const KIND_LABEL = { mini: "ミニ", solo: "ソロ" };
+  const PHASE_NAME = { rehearsal: "リハーサル", show: "本番" };
+  const EVENT_ID = SCHEDULE.eventId || "event";
+  const FAV_KEY = "favorites_" + EVENT_ID;
+  const DRIFT_KEY = "drift_" + EVENT_ID;
 
-/* ============ データ(進行表) ============ */
-// convert_entry_order.py で出演順Excelから変換して、この RAW をまるごと差し替えてください。
-// kind: "performance"(出演あり) | "special"(部の区切り・セクション見出し・挨拶や休憩など)
-// performance行: [no, time, kind, title, performersStr]
-//   title = 種目(曲名・演目名) / performersStr = "出演者・先生（教室名）" を「、」区切りで並べた文字列
-// special行:      [no, time, kind, title, ""]
-//   title = 部タイトルやセクション見出し、挨拶・休憩などの項目名
-const RAW = [
-  [1, "", "special", "開会挨拶", ""],
-  [2, "", "performance", "オープニングダンス", "田中 花子・柴山 和樹"],
-  [3, "", "performance", "ワルツ", "鈴木 一郎・佐藤 恵美"],
-  [4, "", "performance", "ソロパフォーマンス", "山田 太郎"],
-  [5, "", "special", "休憩", ""],
-  [6, "", "performance", "タンゴ", "高橋 太郎・高橋 花子"],
-  [7, "", "special", "表彰式", ""],
-  [8, "", "special", "閉会挨拶", ""],
-];
-const FIELDS = ["no","time","kind","title","performersStr"];
-const ITEMS = RAW.map(row => Object.fromEntries(FIELDS.map((f,i) => [f, row[i]])));
-const isSpecial = kind => kind === "special";
-const hasNotes = item => item.kind === "performance" && (OPTIONS_ENABLED.photo || OPTIONS_ENABLED.dvd);
-const performersOf = item => (item.performersStr || "").split("、").map(s => s.trim()).filter(Boolean);
+  const items = SCHEDULE.items; // merged items with showStart/showEnd/rehearsalStart/rehearsalEnd (absolute minutes)
+  const showSections = SCHEDULE.showSections;
+  const rehearsalSections = SCHEDULE.rehearsalSections;
+  const showStartMin = SCHEDULE.showStartMin;
+  const showEndMin = SCHEDULE.showEndMin;
+  const rehearsalStartMin = SCHEDULE.rehearsalStartMin;
 
-/* ============ ネットワーク ============ */
-async function fetchSharedState() {
-  const res = await fetch(GAS_ENDPOINT, { method: "GET" });
-  if (!res.ok) throw new Error("fetch failed: " + res.status);
-  return await res.json();
-}
-async function pushSharedState(state) {
-  const url = `${GAS_ENDPOINT}?data=${encodeURIComponent(JSON.stringify(state))}`;
-  await fetch(url, { method: "GET", mode: "no-cors" });
-}
+  // group items by part for the timetable view
+  const partList = showSections
+    .filter((s) => s.type === "part_start")
+    .map((s) => ({
+      partIndex: s.partIndex,
+      title: s.label,
+      showStartAbs: s.startAbs,
+      rehearsalStartAbs: (rehearsalSections.find((r) => r.type === "part_start" && r.partIndex === s.partIndex) || {}).startAbs,
+      items: items.filter((it) => it.partIndex === s.partIndex),
+    }));
 
-/* ============ 状態 ============ */
-const state = {
-  mode: "viewer",
-  unlocked: false,
-  showPinPrompt: false,
-  pinValue: "",
-  pinError: false,
-  currentIdx: 0,
-  updatedAt: null,
-  notes: {}, // { [no]: { photo: true/false, dvd: true/false } } スタッフのみ閲覧・編集可能
-  loaded: false,
-  saveError: false,
-  loadError: false,
-  expandedRows: new Set(),
-  pendingRender: false,
-  viewerOnlyLink: (() => {
-    try { return new URLSearchParams(location.search).get("mode") === "viewer"; }
-    catch (e) { return false; }
-  })(),
-};
+  // ---------- time helpers ----------
+  function fmtClock(minOfDay) {
+    const h = Math.floor(minOfDay / 60) % 24;
+    const m = Math.floor(minOfDay) % 60;
+    return String(h).padStart(2, "0") + ":" + String(m).padStart(2, "0");
+  }
+  function dateAtMinOfDay(minOfDay) {
+    const d = new Date();
+    d.setHours(Math.floor(minOfDay / 60), Math.floor(minOfDay) % 60, 0, 0);
+    return d;
+  }
+  function phaseStatus(startAbs, endAbs, now) {
+    const startDate = dateAtMinOfDay(startAbs);
+    const endDate = dateAtMinOfDay(endAbs);
+    if (now < startDate) {
+      const minsLeft = Math.max(1, Math.ceil((startDate - now) / 60000));
+      return { state: "wait", minsLeft, startDate, endDate };
+    } else if (now >= startDate && now < endDate) {
+      return { state: "now", minsLeft: 0, startDate, endDate };
+    } else {
+      return { state: "done", minsLeft: 0, startDate, endDate };
+    }
+  }
 
-function icon(name, size) {
-  size = size || 13;
-  const paths = {
-    clock: `<circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>`,
-    eye: `<path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/>`,
-    radio: `<circle cx="12" cy="12" r="2"/><path d="M16.24 7.76a6 6 0 0 1 0 8.49m-8.48-8.49a6 6 0 0 0 0 8.49M19.07 4.93a10 10 0 0 1 0 14.14M4.93 4.93a10 10 0 0 0 0 14.14"/>`,
-    chevleft: `<polyline points="15 18 9 12 15 6"/>`,
-    chevright: `<polyline points="9 18 15 12 9 6"/>`,
-    reset: `<path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/>`,
-  };
-  return `<svg class="icon" width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${paths[name] || ""}</svg>`;
-}
-
-/* ============ 通信ロジック ============ */
-let lastLocalWriteAt = 0;
-const WRITE_GRACE_MS = 6000; // 自分の書き込み直後は、追いついていないpollの結果を無視する
-
-function isUserEditing() {
-  // 写真・DVDはチェックボックスになったため、入力中に再描画で消えるテキスト欄は無い
-  return false;
-}
-
-async function fetchState() {
+  // ---------- favorites storage ----------
+  let favorites = new Set();
   try {
-    const parsed = await fetchSharedState();
+    const raw = localStorage.getItem(FAV_KEY);
+    if (raw) favorites = new Set(JSON.parse(raw));
+  } catch (e) {}
+  function saveFavorites() {
+    try {
+      localStorage.setItem(FAV_KEY, JSON.stringify(Array.from(favorites)));
+    } catch (e) {}
+  }
+  function favKey(item, name) {
+    return item.partIndex + "-" + item.kind + "-" + item.no + "::" + name;
+  }
+  function itemKey(item) {
+    return item.partIndex + "-" + item.kind + "-" + item.no;
+  }
+  const itemByKey = {};
+  items.forEach((it) => { itemByKey[itemKey(it)] = it; });
 
-    if (Date.now() - lastLocalWriteAt < WRITE_GRACE_MS) {
-      state.loaded = true;
+  // ---------- drift correction (manual "running late/early" sync) ----------
+  let drift = { phase: null, offsetMin: 0, label: "" };
+  try {
+    const raw = localStorage.getItem(DRIFT_KEY);
+    if (raw) drift = JSON.parse(raw);
+  } catch (e) {}
+  function saveDrift() {
+    try {
+      localStorage.setItem(DRIFT_KEY, JSON.stringify(drift));
+    } catch (e) {}
+  }
+  function adjusted(minAbs, phase) {
+    return minAbs + (drift.phase === phase ? drift.offsetMin : 0);
+  }
+  function syncToItem(item) {
+    const now = new Date();
+    const nowMin = now.getHours() * 60 + now.getMinutes() + now.getSeconds() / 60;
+    const distReh = Math.abs(nowMin - item.rehearsalStart);
+    const distShow = Math.abs(nowMin - item.showStart);
+    const phase = distReh <= distShow ? "rehearsal" : "show";
+    const scheduled = phase === "rehearsal" ? item.rehearsalStart : item.showStart;
+    const offsetMin = Math.round(nowMin - scheduled);
+    const part = partList.find((p) => p.partIndex === item.partIndex);
+    drift = { phase, offsetMin, label: (part ? partShortTitle(part.title) : "") + "　" + item.no + "番" };
+    saveDrift();
+    renderDriftBanner();
+    refreshAllDisplays();
+  }
+  function clearDrift() {
+    drift = { phase: null, offsetMin: 0, label: "" };
+    saveDrift();
+    renderDriftBanner();
+    refreshAllDisplays();
+  }
+  function renderDriftBanner() {
+    const el = document.getElementById("driftBanner");
+    if (!el) return;
+    if (!drift.phase) {
+      el.style.display = "none";
+      el.innerHTML = "";
+      return;
+    }
+    el.style.display = "flex";
+    const sign = drift.offsetMin >= 0 ? "+" : "";
+    el.innerHTML = `<span>⏱ ${esc(drift.label)}(${PHASE_NAME[drift.phase]})を基準に ${sign}${drift.offsetMin}分 補正中</span><button id="clearDriftBtn">解除</button>`;
+    document.getElementById("clearDriftBtn").addEventListener("click", clearDrift);
+  }
+  function refreshAllDisplays() {
+    updateLiveBlocks();
+    if (activeTab === "all" && panelAll.dataset.built) {
+      const input = document.getElementById("searchInput");
+      const q = input ? input.value : "";
+      renderTimetable();
+      renderSearchResults(q);
+    }
+    renderNextUpBar();
+  }
+
+  // ---------- next-up bar (nearest favorite, always visible) ----------
+  function renderNextUpBar() {
+    const el = document.getElementById("nextUpBar");
+    if (!el) return;
+    const now = new Date();
+    const nowMin = now.getHours() * 60 + now.getMinutes() + now.getSeconds() / 60;
+    let best = null;
+    items.forEach((item) => {
+      item.performers.forEach((p) => {
+        const key = favKey(item, p.name);
+        if (!favorites.has(key)) return;
+        ["rehearsal", "show"].forEach((phase) => {
+          const start = adjusted(item[phase + "Start"], phase);
+          const end = adjusted(item[phase + "End"], phase);
+          let cand = null;
+          if (nowMin >= start && nowMin < end) {
+            cand = { pri: 0, sortKey: 0, text: `✨ ${esc(p.name)}様が${PHASE_NAME[phase]}中です` };
+          } else if (nowMin < start) {
+            const mins = Math.max(1, Math.ceil(start - nowMin));
+            cand = { pri: 1, sortKey: mins, text: `${esc(p.name)}様 ${PHASE_NAME[phase]}まであと${mins}分` };
+          }
+          if (cand && (!best || cand.pri < best.pri || (cand.pri === best.pri && cand.sortKey < best.sortKey))) {
+            best = cand;
+          }
+        });
+      });
+    });
+    if (!best) {
+      el.style.display = "none";
+      el.innerHTML = "";
+      return;
+    }
+    el.style.display = "flex";
+    el.innerHTML = `<span>${best.text}</span>`;
+  }
+
+  // ---------- DOM refs ----------
+  const panelFav = document.getElementById("panelFav");
+  const panelAll = document.getElementById("panelAll");
+  const tabBtnFav = document.getElementById("tabBtnFav");
+  const tabBtnAll = document.getElementById("tabBtnAll");
+  const favCountEl = document.getElementById("favCount");
+  const liveClockEl = document.getElementById("liveClock");
+  const phaseLabelEl = document.getElementById("phaseLabel");
+
+  let activeTab = "fav";
+  const openParts = new Set([0]);
+
+  function setTab(tab) {
+    activeTab = tab;
+    tabBtnFav.classList.toggle("active", tab === "fav");
+    tabBtnAll.classList.toggle("active", tab === "all");
+    panelFav.style.display = tab === "fav" ? "" : "none";
+    panelAll.style.display = tab === "all" ? "" : "none";
+    if (tab === "fav") renderFavPanel();
+    if (tab === "all" && !panelAll.dataset.built) renderAllPanel();
+  }
+  tabBtnFav.addEventListener("click", () => setTab("fav"));
+  tabBtnAll.addEventListener("click", () => setTab("all"));
+
+  function esc(s) {
+    if (s == null) return "";
+    return String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+  }
+  function studentName(name) {
+    return esc(name) + '<span class="honorific">様</span>';
+  }
+
+  // ---------- shared markup builders ----------
+  function itemHeaderHtml(item, partTitleShort) {
+    const rehTime = adjusted(item.rehearsalStart, "rehearsal");
+    const showTime = adjusted(item.showStart, "show");
+    return `
+      <div class="item-no-badge">${item.no}</div>
+      <div class="item-headinfo">
+        <div class="item-times">
+          <span class="time-chip reh">リハ ${fmtClock(rehTime)}</span>
+          <span class="time-chip show">本番 ${fmtClock(showTime)}</span>
+          <span class="kind-badge ${item.kind}">${KIND_LABEL[item.kind]}</span>
+          <button class="sync-btn" data-sync-key="${esc(itemKey(item))}" title="今ここを基準に時刻を補正">📍今ここ</button>
+        </div>
+        <div class="item-event">${esc(item.event)}${partTitleShort ? " ／ " + esc(partTitleShort) : ""}</div>
+      </div>`;
+  }
+  function performerRowHtml(item, p) {
+    const key = favKey(item, p.name);
+    const active = favorites.has(key);
+    return `
+      <div class="performer-row">
+        <div class="performer-info">
+          <div class="performer-name">${studentName(p.name)}</div>
+          ${p.teacher ? `<div class="performer-teacher">${esc(p.teacher)}先生${p.studio ? "（" + esc(p.studio) + "）" : ""}</div>` : ""}
+        </div>
+        <button class="star-btn ${active ? "active" : ""}" data-key="${esc(key)}">${active ? "★" : "☆"}</button>
+      </div>`;
+  }
+  function partShortTitle(title) {
+    return title.split("〜")[0].trim();
+  }
+
+  // ---------- favorites panel ----------
+  function renderFavPanel() {
+    const favItems = [];
+    items.forEach((item) => {
+      item.performers.forEach((p) => {
+        const key = favKey(item, p.name);
+        if (favorites.has(key)) favItems.push({ item, name: p.name, teacher: p.teacher, studio: p.studio, key });
+      });
+    });
+    favItems.sort((a, b) => a.item.showStart - b.item.showStart);
+    favCountEl.textContent = favItems.length;
+
+    if (favItems.length === 0) {
+      panelFav.innerHTML = `
+        <div class="empty-state">
+          <p>まだお気に入りが登録されていません。</p>
+          <p>★マークを付けてください。</p>
+          <button id="gotoAllBtn">全体タイムテーブルを見る</button>
+        </div>`;
+      document.getElementById("gotoAllBtn").addEventListener("click", () => setTab("all"));
       return;
     }
 
-    const nextIdx = parsed.currentIdx ?? 0;
-    const nextUpdatedAt = parsed.updatedAt ?? null;
-    const nextNotes = parsed.notes ?? {};
-    const changed =
-      nextIdx !== state.currentIdx ||
-      nextUpdatedAt !== state.updatedAt ||
-      JSON.stringify(nextNotes) !== JSON.stringify(state.notes);
-    const hadError = state.loadError;
+    panelFav.innerHTML = favItems
+      .map((f) => {
+        const part = partList.find((pt) => pt.partIndex === f.item.partIndex);
+        return `
+        <div class="fav-card" data-key-ref="${esc(f.key)}" data-live>
+          <div class="fav-top">
+            <div class="fav-info">
+              <div class="fav-order-label">${part ? esc(partShortTitle(part.title)) : ""}　${f.item.no}番</div>
+              <div class="fav-name">${studentName(f.name)}</div>
+              <div class="fav-meta">${esc(f.item.event)}${f.teacher ? " ・ " + esc(f.teacher) + "先生" : ""}${f.studio ? "（" + esc(f.studio) + "）" : ""}</div>
+            </div>
+            <button class="fav-star-btn" data-key="${esc(f.key)}" title="お気に入り解除">★</button>
+          </div>
+          <div class="fav-phase-block" data-phase="rehearsal" data-start="${adjusted(f.item.rehearsalStart, "rehearsal")}" data-end="${adjusted(f.item.rehearsalEnd, "rehearsal")}">
+            <div class="phase-label">リハーサル</div>
+            <div class="phase-body"></div>
+          </div>
+          <div class="fav-phase-block" data-phase="show" data-start="${adjusted(f.item.showStart, "show")}" data-end="${adjusted(f.item.showEnd, "show")}">
+            <div class="phase-label">本番</div>
+            <div class="phase-body"></div>
+          </div>
+        </div>`;
+      })
+      .join("");
 
-    state.currentIdx = nextIdx;
-    state.updatedAt = nextUpdatedAt;
-    state.notes = nextNotes;
-    state.loadError = false;
+    panelFav.querySelectorAll(".fav-star-btn").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        favorites.delete(btn.dataset.key);
+        saveFavorites();
+        renderFavPanel();
+        updateAllTabStars();
+        renderNextUpBar();
+      });
+    });
 
-    const wasFirstLoad = !state.loaded;
-    state.loaded = true;
-
-    if (!changed && !hadError && !wasFirstLoad) return;
-    if (isUserEditing()) { state.pendingRender = true; return; }
-    render();
-  } catch (e) {
-    console.error("読み込みに失敗しました", e);
-    state.loadError = true;
-    state.loaded = true;
-    if (isUserEditing()) { state.pendingRender = true; return; }
-    render();
-  }
-}
-
-async function pushState(idx) {
-  const ts = new Date().toISOString();
-  state.currentIdx = idx;
-  state.updatedAt = ts;
-  lastLocalWriteAt = Date.now();
-  render();
-  const hadError = state.saveError;
-  try {
-    await pushSharedState({ currentIdx: idx, updatedAt: ts, notes: state.notes });
-    state.saveError = false;
-  } catch (e) {
-    console.error("保存に失敗しました", e);
-    state.saveError = true;
-  }
-  if (state.saveError !== hadError) render();
-}
-
-async function pushNotes(nextNotes) {
-  // 進行位置(currentIdx)には一切触れず、メモだけを更新する
-  const ts = new Date().toISOString();
-  state.notes = nextNotes;
-  state.updatedAt = ts;
-  lastLocalWriteAt = Date.now();
-  const hadError = state.saveError;
-  try {
-    await pushSharedState({ currentIdx: state.currentIdx, updatedAt: ts, notes: nextNotes });
-    state.saveError = false;
-  } catch (e) {
-    console.error("保存に失敗しました", e);
-    state.saveError = true;
-  }
-  if (state.saveError !== hadError) render();
-}
-
-function toggleNote(no, field) {
-  const cur = state.notes[String(no)] || { photo: false, dvd: false };
-  const nextNotes = { ...state.notes, [String(no)]: { ...cur, [field]: !cur[field] } };
-  state.notes = nextNotes; // 即座に画面へ反映してから保存する(チェック後の反応を待たせない)
-  render();
-  pushNotes(nextNotes);
-}
-
-function goNext() { if (state.currentIdx < ITEMS.length - 1) pushState(state.currentIdx + 1); }
-function goPrev() { if (state.currentIdx > 0) pushState(state.currentIdx - 1); }
-function resetAll() { pushState(0); }
-function toggleRow(no) {
-  if (state.expandedRows.has(no)) state.expandedRows.delete(no); else state.expandedRows.add(no);
-  render();
-}
-function requestStaffMode() {
-  if (state.unlocked) { state.mode = "staff"; render(); return; }
-  state.pinValue = ""; state.pinError = false; state.showPinPrompt = true; render();
-}
-function submitPin() {
-  if (state.pinValue === STAFF_PIN) { state.unlocked = true; state.showPinPrompt = false; state.mode = "staff"; }
-  else { state.pinError = true; }
-  render();
-}
-function lockStaffMode() { state.unlocked = false; state.mode = "viewer"; render(); }
-function setViewerMode() { state.mode = "viewer"; render(); }
-function onPinChange(v) { state.pinValue = v; state.pinError = false; }
-function onFieldBlur() {
-  if (state.pendingRender) {
-    state.pendingRender = false;
-    render();
-  }
-}
-
-/* ============ 描画 ============ */
-function esc(s) {
-  return String(s).replace(/[&<>"']/g, c => ({ "&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;" }[c]));
-}
-
-function renderNowCard(current) {
-  let body;
-  if (isSpecial(current.kind)) {
-    body = `<div class="now-special">${esc(current.title)}</div>`;
-  } else {
-    const performers = performersOf(current);
-    body = `
-      <div class="now-name">${esc(current.title)}</div>
-      ${performers.length ? `<div class="now-sub">${performers.map(esc).join("<br>")}</div>` : ""}
-      ${current.time ? `<div class="now-meta"><span class="meta-chip">${icon("clock")} ${esc(current.time)}</span></div>` : ""}`;
-  }
-  return `<section class="now-card"><div class="now-label">NOW</div>${body}</section>`;
-}
-
-function render() {
-  const current = ITEMS[state.currentIdx];
-  const next = ITEMS[state.currentIdx + 1];
-  const progressPct = Math.round(((state.currentIdx + 1) / ITEMS.length) * 100);
-
-  let modeToggleHtml;
-  if (state.viewerOnlyLink) {
-    modeToggleHtml = `<span class="viewer-only-tag">${icon("eye")} 観覧用</span>`;
-  } else {
-    modeToggleHtml = `
-      <button class="mode-btn ${state.mode === "viewer" ? "active" : ""}" onclick="setViewerMode()">${icon("eye")} 観覧</button>
-      <button class="mode-btn ${state.mode === "staff" ? "active" : ""}" onclick="${state.mode === "staff" ? "lockStaffMode()" : "requestStaffMode()"}">${icon("radio")} 運営${state.mode === "staff" ? "中" : ""}</button>`;
+    updateLiveBlocks();
   }
 
-  const pinHtml = state.showPinPrompt ? `
-    <div class="pin-overlay">
-      <div class="pin-card">
-        <div class="pin-title">運営モードの合言葉</div>
-        <input class="pin-input" type="password" inputmode="numeric" autofocus value="${esc(state.pinValue)}"
-          oninput="onPinChange(this.value)" onkeydown="if(event.key==='Enter') submitPin()" onblur="onFieldBlur()" placeholder="••••" />
-        ${state.pinError ? `<div class="pin-error">合言葉が違います</div>` : ""}
-        <div class="pin-btn-row">
-          <button class="ctrl-btn ctrl-ghost" onclick="state.showPinPrompt=false; render();">キャンセル</button>
-          <button class="ctrl-btn ctrl-primary" onclick="submitPin()">入る</button>
-        </div>
-      </div>
-    </div>` : "";
-
-  const controlsHtml = state.mode === "staff" ? `
-    <div class="controls">
-      <button class="ctrl-btn" ${state.currentIdx === 0 ? "disabled" : ""} onclick="goPrev()">${icon("chevleft",18)} 戻す</button>
-      <button class="ctrl-btn ctrl-ghost" onclick="resetAll()">${icon("reset",16)} 最初へ</button>
-      <button class="ctrl-btn ctrl-primary" ${state.currentIdx === ITEMS.length - 1 ? "disabled" : ""} onclick="goNext()">進める ${icon("chevright",18)}</button>
-    </div>` : "";
-
-  const nextHtml = next ? `
-    <div class="next-strip">
-      <span class="next-label">NEXT</span>
-      <span class="next-text">${next.time ? `${esc(next.time)}　` : ""}${esc(next.title)}${performersOf(next).length ? `　${performersOf(next).join("、")}` : ""}</span>
-    </div>` : "";
-
-  const rowsHtml = ITEMS.map((item, idx) => {
-    const rstate = idx < state.currentIdx ? "done" : idx === state.currentIdx ? "current" : "upcoming";
-    const isExpanded = state.expandedRows.has(item.no);
-    const note = state.notes[String(item.no)] || { photo: false, dvd: false };
-    const rowClasses = ["row", "clickable", rstate === "current" ? "current" : "", rstate === "done" ? "done" : ""].filter(Boolean).join(" ");
-
-    let bodyHtml;
-    if (isSpecial(item.kind)) {
-      bodyHtml = `<span class="row-special">${esc(item.title)}</span>`;
-    } else {
-      const performers = performersOf(item);
-      bodyHtml = `<span><strong>${esc(item.title)}</strong>${performers.length ? `　${esc(performers.join("、"))}` : ""}</span>`;
-    }
-    // メモ(写真・DVD)は運営モードのときだけプレビューを出す。観覧側には一切出さない。
-    const previewParts = [];
-    if (state.mode === "staff") {
-      if (OPTIONS_ENABLED.photo && note.photo) previewParts.push("写真あり");
-      if (OPTIONS_ENABLED.dvd && note.dvd) previewParts.push("DVDあり");
-    }
-    const notePreview = previewParts.length ? `<div class="row-note-preview">${previewParts.join("　")}</div>` : "";
-
-    const statusHtml = `
-      ${rstate === "current" ? `<span class="badge-now">進行中</span>` : ""}
-      ${rstate === "done" ? `<span class="badge-done">終了</span>` : ""}
-      ${(state.mode === "staff" && hasNotes(item)) ? `<button class="expand-btn" onclick="event.stopPropagation(); toggleRow(${item.no})">写真/DVD ${isExpanded ? "▲" : "▼"}</button>` : ""}`;
-
-    // スタッフのみ・写真/DVDのチェック欄。進行ポインタとは無関係にいつでも編集可能。
-    // タップした瞬間に保存される(自由記述時代の「保存」ボタンは不要になった)。
-    // 観覧モードのHTMLには一切出力しない(state.mode === "staff" のときだけ組み立てる)。
-    const notePanelHtml = (isExpanded && state.mode === "staff" && hasNotes(item)) ? `
-      <div class="note-panel">
-        <div class="note-panel-label">写真・DVD注文(スタッフのみ・観覧側には表示されません)</div>
-        <div class="note-check-row">
-          ${OPTIONS_ENABLED.photo ? `
-          <label class="note-check">
-            <input type="checkbox" ${note.photo ? "checked" : ""} onclick="event.stopPropagation(); toggleNote(${item.no}, 'photo')" />
-            <span>写真</span>
-          </label>` : ""}
-          ${OPTIONS_ENABLED.dvd ? `
-          <label class="note-check">
-            <input type="checkbox" ${note.dvd ? "checked" : ""} onclick="event.stopPropagation(); toggleNote(${item.no}, 'dvd')" />
-            <span>DVD</span>
-          </label>` : ""}
-        </div>
-      </div>` : "";
-
-    return `
-      <div class="${rowClasses}" onclick="toggleRow(${item.no})">
-        <div class="row-no">${item.no}</div>
-        <div class="row-time">${esc(item.time || "")}</div>
-        <div class="row-body">${bodyHtml}${notePreview}</div>
-        <div class="row-status">${statusHtml}</div>
-      </div>
-      ${notePanelHtml}`;
-  }).join("");
-
-  const setupNotice = !GAS_ENDPOINT.startsWith("https://script.google.com/macros/") ? `
-    <div class="setup-notice">⚠ GAS_ENDPOINT が未設定です。コード上部の GAS_ENDPOINT に、デプロイしたGoogle Apps ScriptのウェブアプリURLを貼り付けてください。</div>` : "";
-
-  document.getElementById("app").innerHTML = `
-    <header>
-      <div class="header-top">
-        <div>
-          <div class="eyebrow">PROGRESS BOARD</div>
-          <h1>選手会パーティー</h1>
-          <div class="subtitle">進行状況ボード</div>
-        </div>
-        <div class="mode-toggle">${modeToggleHtml}</div>
-      </div>
-      ${setupNotice}
-      ${pinHtml}
-      <div class="progress-track"><div class="progress-fill" style="width:${progressPct}%"></div></div>
-      <div class="progress-label">NO.${current.no} / ${ITEMS.length}　${progressPct}%</div>
-    </header>
-
-    ${renderNowCard(current)}
-    ${nextHtml}
-    ${controlsHtml}
-
-    <div class="list-wrap">${rowsHtml}</div>
-
-    <footer>
-      ${state.loadError ? `<span class="err">⚠ 読み込みに失敗しました　</span>` : ""}
-      ${state.saveError ? `<span class="err">⚠ 保存に失敗しました　</span>` : ""}
-      ${state.updatedAt ? `最終更新 ${new Date(state.updatedAt).toLocaleTimeString("ja-JP")}` : "同期待機中"}　
-      ${state.mode === "viewer" ? "· 観覧モード（自動更新）" : "· 運営モード（タップで進行を操作）"}
-    </footer>
-
-    <div class="nexus-credit">
-      <svg width="18" height="18" viewBox="0 0 40 40" fill="none">
-        <path d="M20 3 L34 20 L20 37 L6 20 Z" stroke="#b8863b" stroke-width="1.6"/>
-        <circle cx="20" cy="20" r="3" fill="#b8863b"/>
-        <circle cx="20" cy="9" r="2" fill="#a89d86"/><circle cx="29" cy="20" r="2" fill="#a89d86"/>
-        <circle cx="20" cy="31" r="2" fill="#a89d86"/><circle cx="11" cy="20" r="2" fill="#a89d86"/>
-        <line x1="20" y1="20" x2="20" y2="9" stroke="#a89d86"/><line x1="20" y1="20" x2="29" y2="20" stroke="#a89d86"/>
-        <line x1="20" y1="20" x2="20" y2="31" stroke="#a89d86"/><line x1="20" y1="20" x2="11" y2="20" stroke="#a89d86"/>
-      </svg>
-      <span>
-        <span class="nexus-word">Created by NEXUS ENTERTAINMENT</span>
-        <span class="nexus-tagline">進行も、演出も。窓口はひとつに。</span>
-      </span>
-    </div>`;
-
-  if (state.currentIdx !== lastScrolledIdx) {
-    lastScrolledIdx = state.currentIdx;
-    const listWrap = document.querySelector(".list-wrap");
-    const currentRow = document.querySelector(".row.current");
-    if (listWrap && currentRow) {
-      const wrapRect = listWrap.getBoundingClientRect();
-      const rowRect = currentRow.getBoundingClientRect();
-      if (rowRect.top < wrapRect.top || rowRect.bottom > wrapRect.bottom) {
-        listWrap.scrollTop += (rowRect.top - wrapRect.top) - (wrapRect.height / 2);
+  function updateLiveBlocks() {
+    const now = new Date();
+    document.querySelectorAll(".fav-phase-block").forEach((block) => {
+      const startAbs = Number(block.dataset.start);
+      const endAbs = Number(block.dataset.end);
+      const st = phaseStatus(startAbs, endAbs, now);
+      const body = block.querySelector(".phase-body");
+      block.classList.toggle("is-now", st.state === "now");
+      block.classList.toggle("is-done", st.state === "done");
+      block.classList.toggle("compact", st.state === "done");
+      if (st.state === "wait") {
+        body.innerHTML = `<span class="num">${st.minsLeft}</span><span class="unit">分後</span><span class="clocktime">（${fmtClock(startAbs)}ごろ）</span>`;
+      } else if (st.state === "now") {
+        body.innerHTML = `<span class="badge now">✨ 只今の時間帯です</span>`;
+      } else {
+        const name = PHASE_NAME[block.dataset.phase] || "";
+        body.innerHTML = `<span class="badge-compact">✓ ${name}終了（${fmtClock(startAbs)}）</span>`;
       }
-    }
+    });
+    updateHeaderPhase(now);
   }
-}
-let lastScrolledIdx = -1;
 
-/* ============ 起動 ============ */
-render();
-fetchState();
-setInterval(fetchState, POLL_MS);
+  // ---------- all tab: overview + search + timetable ----------
+  function renderAllPanel() {
+    panelAll.dataset.built = "1";
+    const chips = partList
+      .map(
+        (p) => `<div class="overview-chip" data-jump="part-${p.partIndex}">
+            <div class="label">${esc(partShortTitle(p.title))}</div>
+            <div class="t">本番 ${fmtClock(adjusted(p.showStartAbs, "show"))}〜</div>
+            <div class="t2">リハ ${fmtClock(adjusted(p.rehearsalStartAbs, "rehearsal"))}〜</div>
+          </div>`
+      )
+      .join("");
+    const proshow = showSections.find((s) => s.type === "proshow");
+    const proRehearsalChip = rehearsalSections.find((s) => s.type === "pro_rehearsal");
+
+    panelAll.innerHTML = `
+      <div class="overview-scroll">
+        <div class="overview-chip" data-jump="pro-rehearsal-jump"><div class="label">プロリハ</div><div class="t2">${fmtClock(proRehearsalChip.startAbs)}〜</div></div>
+        ${chips}
+        ${proshow ? `<div class="overview-chip" data-jump="proshow-jump"><div class="label">プロショー</div><div class="t">本番 ${fmtClock(proshow.startAbs)}〜</div></div>` : ""}
+      </div>
+      <div class="search-wrap">
+        <span class="icon">🔍</span>
+        <input type="text" id="searchInput" placeholder="お名前で検索（生徒様・先生どちらでも）" autocomplete="off">
+      </div>
+      <div class="search-results" id="searchResults"></div>
+      <div id="timetableList"></div>
+    `;
+
+    document.querySelectorAll(".overview-chip[data-jump]").forEach((chip) => {
+      chip.addEventListener("click", () => {
+        const jumpId = chip.dataset.jump;
+        if (jumpId.startsWith("part-")) {
+          openParts.add(Number(jumpId.split("-")[1]));
+          renderTimetable();
+        }
+        const target = document.getElementById(jumpId);
+        if (target) target.scrollIntoView({ behavior: "smooth", block: "start" });
+      });
+    });
+
+    const searchInput = document.getElementById("searchInput");
+    searchInput.addEventListener("input", () => renderSearchResults(searchInput.value.trim()));
+
+    renderTimetable();
+    renderSearchResults("");
+  }
+
+  function renderSearchResults(query) {
+    const box = document.getElementById("searchResults");
+    if (!query) {
+      box.innerHTML = "";
+      return;
+    }
+    const matches = [];
+    items.forEach((item) => {
+      item.performers.forEach((p) => {
+        if (p.name.includes(query) || (p.teacher && p.teacher.includes(query))) matches.push({ item, p });
+      });
+    });
+    if (matches.length === 0) {
+      box.innerHTML = `<div class="search-hint">「${esc(query)}」に一致する方が見つかりません</div>`;
+      return;
+    }
+    box.innerHTML =
+      `<div class="search-hint">${matches.length}件ヒット</div>` +
+      matches
+        .map(({ item, p }) => {
+          const part = partList.find((pt) => pt.partIndex === item.partIndex);
+          return `
+          <div class="item-row search-item-row">
+            <div class="item-row-flex">
+              ${itemHeaderHtml(item, part ? partShortTitle(part.title) : "")}
+            </div>
+            ${performerRowHtml(item, p)}
+          </div>`;
+        })
+        .join("");
+    box.querySelectorAll(".star-btn").forEach((btn) => btn.addEventListener("click", () => onStarClick(btn)));
+    box.querySelectorAll(".sync-btn").forEach((btn) => btn.addEventListener("click", () => onSyncClick(btn)));
+  }
+
+  function renderTimetable() {
+    const list = document.getElementById("timetableList");
+    if (!list) return;
+
+    const html = [];
+    const proRehearsal = rehearsalSections.find((s) => s.type === "pro_rehearsal");
+    if (proRehearsal) {
+      html.push(
+        `<div class="proshow-row pro-rehearsal-row" id="pro-rehearsal-jump">${esc(proRehearsal.label)}<small>${fmtClock(proRehearsal.startAbs)}〜${fmtClock(proRehearsal.endAbs)}（出演者一覧は別紙をご覧ください）</small></div>`
+      );
+    }
+    showSections.forEach((s) => {
+      if (s.type === "break") {
+        html.push(`<div class="break-row"><span>${esc(s.label)}</span><span>${fmtClock(s.startAbs)}〜${fmtClock(s.endAbs)}</span></div>`);
+        return;
+      }
+      if (s.type === "proshow") {
+        html.push(`<div class="proshow-row" id="proshow-jump">${esc(s.label)}<small>${fmtClock(s.startAbs)}〜${fmtClock(s.endAbs)}（出演者一覧は別紙をご覧ください）</small></div>`);
+        return;
+      }
+      if (s.type === "part_start") {
+        const part = partList.find((p) => p.partIndex === s.partIndex);
+        const open = openParts.has(s.partIndex);
+        const itemsHtml = part.items
+          .map((item) => {
+            const perfHtml = item.performers.map((p) => performerRowHtml(item, p)).join("");
+            return `
+            <div class="item-row">
+              <div class="item-row-flex">${itemHeaderHtml(item, "")}</div>
+              ${perfHtml}
+            </div>`;
+          })
+          .join("");
+        html.push(`
+          <div class="part-section">
+            <div class="part-header ${open ? "open" : ""}" id="part-${s.partIndex}" data-part="${s.partIndex}">
+              <div class="htitle">${esc(partShortTitle(s.label))}
+                <small>〜${esc(s.label.split("〜")[1] || "")}〜　本番 ${fmtClock(adjusted(part.showStartAbs, "show"))}〜／リハ ${fmtClock(adjusted(part.rehearsalStartAbs, "rehearsal"))}〜</small>
+              </div>
+              <svg class="chevron" width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+            <div class="part-body ${open ? "open" : ""}">${itemsHtml}</div>
+          </div>`);
+      }
+    });
+
+    list.innerHTML = html.join("");
+
+    list.querySelectorAll(".part-header").forEach((h) => {
+      h.addEventListener("click", () => {
+        const p = Number(h.dataset.part);
+        if (openParts.has(p)) openParts.delete(p);
+        else openParts.add(p);
+        renderTimetable();
+      });
+    });
+    list.querySelectorAll(".star-btn").forEach((btn) => btn.addEventListener("click", () => onStarClick(btn)));
+    list.querySelectorAll(".sync-btn").forEach((btn) => btn.addEventListener("click", () => onSyncClick(btn)));
+  }
+
+  function onStarClick(btn) {
+    const key = btn.dataset.key;
+    if (favorites.has(key)) favorites.delete(key);
+    else favorites.add(key);
+    saveFavorites();
+    updateAllTabStars();
+    favCountEl.textContent = countFavorites();
+    if (activeTab === "fav") renderFavPanel();
+    renderNextUpBar();
+  }
+
+  function onSyncClick(btn) {
+    const item = itemByKey[btn.dataset.syncKey];
+    if (item) syncToItem(item);
+  }
+
+  function countFavorites() {
+    let n = 0;
+    items.forEach((item) => item.performers.forEach((p) => { if (favorites.has(favKey(item, p.name))) n++; }));
+    return n;
+  }
+
+  function updateAllTabStars() {
+    document.querySelectorAll(".star-btn[data-key]").forEach((btn) => {
+      const active = favorites.has(btn.dataset.key);
+      btn.classList.toggle("active", active);
+      btn.textContent = active ? "★" : "☆";
+    });
+  }
+
+  // ---------- header live clock / phase ----------
+  function updateHeaderPhase(now) {
+    const nowMin = now.getHours() * 60 + now.getMinutes() + now.getSeconds() / 60;
+    let label = "開始前";
+    if (nowMin >= rehearsalStartMin && nowMin < showStartMin) label = "リハーサル中";
+    else if (nowMin >= showStartMin && nowMin < showEndMin) label = "本番 開催中";
+    else if (nowMin >= showEndMin) label = "終了";
+    phaseLabelEl.textContent = label;
+  }
+
+  function tickClock() {
+    const now = new Date();
+    liveClockEl.textContent =
+      String(now.getHours()).padStart(2, "0") + ":" + String(now.getMinutes()).padStart(2, "0") + ":" + String(now.getSeconds()).padStart(2, "0");
+    updateHeaderPhase(now);
+  }
+
+  // ---------- back to top ----------
+  const backToTopBtn = document.getElementById("backToTopBtn");
+  if (backToTopBtn) {
+    window.addEventListener(
+      "scroll",
+      () => {
+        backToTopBtn.classList.toggle("visible", window.scrollY > 400);
+      },
+      { passive: true }
+    );
+    backToTopBtn.addEventListener("click", () => {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    });
+  }
+
+  // ---------- init ----------
+  favCountEl.textContent = countFavorites();
+  renderFavPanel();
+  renderDriftBanner();
+  renderNextUpBar();
+  tickClock();
+  setInterval(tickClock, 1000);
+  setInterval(() => {
+    updateLiveBlocks();
+    renderNextUpBar();
+  }, 15000);
+})();
+
 </script>
 </body>
 </html>
