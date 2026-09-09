@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 <title>本日の進行表 — 梅原ダンススクール サマーダンスパーティー</title>
 <link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#5C1A2E">
+<meta name="theme-color" content="#00A86B">
 <link rel="apple-touch-icon" href="icon-192.png">
 <link rel="icon" href="icon-192.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -13,23 +13,23 @@
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,500&family=Shippori+Mincho:wght@500;700&family=Zen+Kaku+Gothic+New:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
 :root{
-  --wine: #5C1A2E;
-  --wine-deep: #38101F;
-  --wine-soft: #7C2E45;
-  --blush: #F1C7D2;
-  --blush-soft: #F9E4E9;
-  --cream: #FFF8F4;
-  --gold: #C9A15A;
-  --gold-soft: #E7D3AC;
-  --teal: #4F978C;
-  --ink: #2B1116;
-  --ink-soft: #6b4653;
-  --line: #EAD9DD;
-  --mini-badge-bg: #F1E3C8;
-  --mini-badge-fg: #8A6A22;
-  --solo-badge-bg: #EFD3DB;
-  --solo-badge-fg: #7C2E45;
-  --shadow: 0 6px 20px rgba(56,16,31,0.10);
+  --wine: #00A86B;
+  --wine-deep: #046A44;
+  --wine-soft: #1F8055;
+  --blush: #BEEED9;
+  --blush-soft: #EAFBF3;
+  --cream: #F7FCFA;
+  --gold: #FFC93C;
+  --gold-soft: #FFE9AE;
+  --teal: #FF2D78;
+  --ink: #12271C;
+  --ink-soft: #4C6B5C;
+  --line: #D7EEE1;
+  --mini-badge-bg: #FFF1CC;
+  --mini-badge-fg: #7A5A12;
+  --solo-badge-bg: #D9F3E6;
+  --solo-badge-fg: #046A44;
+  --shadow: 0 6px 20px rgba(4,106,68,0.10);
   --radius: 14px;
 }
 *{box-sizing:border-box;}
@@ -54,7 +54,7 @@ header.app-header{
   background: linear-gradient(180deg, var(--wine) 0%, var(--wine-deep) 100%);
   color: var(--blush-soft);
   padding: 14px 20px 16px;
-  box-shadow: 0 4px 16px rgba(56,16,31,0.25);
+  box-shadow: 0 4px 16px rgba(4,58,38,0.25);
 }
 .header-inner{ max-width: 640px; margin: 0 auto; }
 .eyebrow{
@@ -271,13 +271,35 @@ main{ max-width: 640px; margin: 0 auto; padding: 16px; }
 .back-to-top{
   position: fixed; right: 18px; bottom: 20px; z-index: 50;
   width: 46px; height: 46px; border-radius: 50%; border: none; cursor: pointer;
-  background: var(--wine); color: #fff; box-shadow: 0 6px 16px rgba(56,16,31,0.35);
+  background: var(--wine); color: #fff; box-shadow: 0 6px 16px rgba(4,58,38,0.35);
   display:flex; align-items:center; justify-content:center;
   opacity: 0; visibility: hidden; transform: translateY(10px);
   transition: opacity .2s ease, transform .2s ease, visibility .2s;
 }
 .back-to-top.visible{ opacity: 1; visibility: visible; transform: translateY(0); }
 .back-to-top svg{ width: 20px; height: 20px; }
+
+.confirm-overlay{
+  position: fixed; inset: 0; z-index: 100;
+  background: rgba(4,58,38,0.55);
+  display:flex; align-items:center; justify-content:center;
+  padding: 24px;
+}
+.confirm-card{
+  background: #fff; border-radius: 16px; padding: 22px 20px;
+  max-width: 340px; width: 100%; box-shadow: 0 12px 32px rgba(4,58,38,0.3);
+  text-align:center;
+}
+.confirm-message{
+  font-size: 15px; color: var(--ink); line-height:1.7; margin: 0 0 18px; white-space: pre-line;
+}
+.confirm-actions{ display:flex; gap:10px; }
+.confirm-btn{
+  flex:1; border:none; cursor:pointer; padding: 11px 10px; border-radius: 999px;
+  font-family: inherit; font-size: 14px; font-weight:700;
+}
+.confirm-btn.cancel{ background: var(--blush-soft); color: var(--wine-soft); }
+.confirm-btn.ok{ background: var(--wine); color:#fff; }
 
 @media (min-width: 480px){
   h1.title{ font-size: 30px; }
@@ -335,6 +357,16 @@ main{ max-width: 640px; margin: 0 auto; padding: 16px; }
 <button id="backToTopBtn" class="back-to-top" aria-label="上に戻る">
   <svg viewBox="0 0 24 24" fill="none"><path d="M12 19V5M12 5l-6 6M12 5l6 6" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
 </button>
+
+<div id="confirmOverlay" class="confirm-overlay" style="display:none;">
+  <div class="confirm-card">
+    <p id="confirmMessage" class="confirm-message"></p>
+    <div class="confirm-actions">
+      <button id="confirmCancelBtn" class="confirm-btn cancel">キャンセル</button>
+      <button id="confirmOkBtn" class="confirm-btn ok">補正する</button>
+    </div>
+  </div>
+</div>
 
 <script>
 const SCHEDULE = {"eventId": "umehara-summer-2026", "showStartMin": 840, "showEndMin": 1170, "rehearsalStartMin": 550, "showSections": [{"type": "break", "label": "ドアオープン", "startAbs": 840, "endAbs": 850}, {"type": "part_start", "label": "第1部 〜 ミニ＆ソロデモンストレーション 〜", "partIndex": 0, "startAbs": 850}, {"type": "break", "label": "ダンスタイム", "startAbs": 900, "endAbs": 910}, {"type": "part_start", "label": "第2部 〜 ソロデモンストレーション 〜", "partIndex": 1, "startAbs": 910}, {"type": "break", "label": "ダンスタイム", "startAbs": 970, "endAbs": 980}, {"type": "part_start", "label": "第3部 〜 ソロデモンストレーション 〜", "partIndex": 2, "startAbs": 980}, {"type": "break", "label": "ダンスタイム", "startAbs": 1045, "endAbs": 1060}, {"type": "proshow", "label": "ディナー", "startAbs": 1060, "endAbs": 1125}, {"type": "proshow", "label": "プロショータイム", "startAbs": 1125, "endAbs": 1170}], "rehearsalSections": [{"type": "entry", "label": "控室入室開始", "startAbs": 550, "endAbs": 585}, {"type": "part_start", "label": "第1部 〜 ミニ＆ソロデモンストレーション 〜", "partIndex": 0, "startAbs": 585}, {"type": "part_start", "label": "第2部 〜 ソロデモンストレーション 〜", "partIndex": 1, "startAbs": 635}, {"type": "part_start", "label": "第3部 〜 ソロデモンストレーション 〜", "partIndex": 2, "startAbs": 695}, {"type": "pro_rehearsal", "label": "プロ リハーサル", "startAbs": 760, "endAbs": 810}, {"type": "pre_break", "label": "ブレイク", "startAbs": 810, "endAbs": 840}], "items": [{"partIndex": 0, "no": 1, "kind": "mini", "event": "Waltz", "performers": [{"name": "前川和枝", "teacher": "村澤俊也", "studio": null}], "duration": 2, "rehearsalStart": 585, "rehearsalEnd": 587, "showStart": 850, "showEnd": 852}, {"partIndex": 0, "no": 2, "kind": "mini", "event": "Rumba", "performers": [{"name": "池田英世", "teacher": "斎木智子", "studio": "dance studio VIVAILA"}], "duration": 2, "rehearsalStart": 587, "rehearsalEnd": 589, "showStart": 852, "showEnd": 854}, {"partIndex": 0, "no": 3, "kind": "mini", "event": "Waltz", "performers": [{"name": "谷本信代", "teacher": "村澤俊也", "studio": null}], "duration": 2, "rehearsalStart": 589, "rehearsalEnd": 591, "showStart": 854, "showEnd": 856}, {"partIndex": 0, "no": 4, "kind": "mini", "event": "Tango", "performers": [{"name": "小林廣人", "teacher": "松永ゆかり", "studio": "アカデミーオブダンス.ヨコタ"}], "duration": 2, "rehearsalStart": 591, "rehearsalEnd": 593, "showStart": 856, "showEnd": 858}, {"partIndex": 0, "no": 5, "kind": "mini", "event": "Waltz", "performers": [{"name": "吉田美千代", "teacher": "小西雅司", "studio": "小西雅司ダンススタジオ"}], "duration": 2, "rehearsalStart": 593, "rehearsalEnd": 595, "showStart": 858, "showEnd": 860}, {"partIndex": 0, "no": 1, "kind": "solo", "event": "Show Dance", "performers": [{"name": "江口裕子", "teacher": "金原亮司", "studio": "小西雅司ダンススタジオ"}], "duration": 3, "rehearsalStart": 595, "rehearsalEnd": 598, "showStart": 860, "showEnd": 863}, {"partIndex": 0, "no": 2, "kind": "solo", "event": "Show Dance", "performers": [{"name": "若園さくら", "teacher": "岩田健司", "studio": "岩田健司ダンススタジオ"}], "duration": 3, "rehearsalStart": 598, "rehearsalEnd": 601, "showStart": 863, "showEnd": 866}, {"partIndex": 0, "no": 3, "kind": "solo", "event": "Rumba", "performers": [{"name": "Natty", "teacher": "村澤俊也", "studio": null}], "duration": 3, "rehearsalStart": 601, "rehearsalEnd": 604, "showStart": 866, "showEnd": 869}, {"partIndex": 0, "no": 4, "kind": "solo", "event": "Recuerdo", "performers": [{"name": "吉田万樹子", "teacher": "瀬内英幸", "studio": "dance studio VIVAILA"}], "duration": 3, "rehearsalStart": 604, "rehearsalEnd": 607, "showStart": 869, "showEnd": 872}, {"partIndex": 0, "no": 5, "kind": "solo", "event": "Cavatina", "performers": [{"name": "伴鉱司", "teacher": "川澄清香", "studio": "サワダダンススタジオ"}], "duration": 3, "rehearsalStart": 607, "rehearsalEnd": 610, "showStart": 872, "showEnd": 875}, {"partIndex": 0, "no": 6, "kind": "solo", "event": "Slow Foxtrot", "performers": [{"name": "横山朝子", "teacher": "柴山和樹", "studio": "DANCE STUDIO B&G"}], "duration": 3, "rehearsalStart": 610, "rehearsalEnd": 613, "showStart": 875, "showEnd": 878}, {"partIndex": 0, "no": 7, "kind": "solo", "event": "Slow Foxtrot", "performers": [{"name": "松本由紀子", "teacher": "村澤俊也", "studio": null}], "duration": 3, "rehearsalStart": 613, "rehearsalEnd": 616, "showStart": 878, "showEnd": 881}, {"partIndex": 0, "no": 8, "kind": "solo", "event": "Slow Foxtrot", "performers": [{"name": "近田弘子", "teacher": "西田克義", "studio": "ニシダダンススタジオ"}], "duration": 3, "rehearsalStart": 616, "rehearsalEnd": 619, "showStart": 881, "showEnd": 884}, {"partIndex": 0, "no": 9, "kind": "solo", "event": "Show Dance", "performers": [{"name": "蘭洋子", "teacher": "永田勝規", "studio": "永田勝規ダンススタジオ"}], "duration": 3, "rehearsalStart": 619, "rehearsalEnd": 622, "showStart": 884, "showEnd": 887}, {"partIndex": 0, "no": 10, "kind": "solo", "event": "Tango", "performers": [{"name": "中西恵美子", "teacher": "村澤俊也", "studio": null}], "duration": 3, "rehearsalStart": 622, "rehearsalEnd": 625, "showStart": 887, "showEnd": 890}, {"partIndex": 0, "no": 11, "kind": "solo", "event": "Slow Foxtrot", "performers": [{"name": "生田恵津子", "teacher": "岩田健司", "studio": "岩田健司ダンススタジオ"}], "duration": 3, "rehearsalStart": 625, "rehearsalEnd": 628, "showStart": 890, "showEnd": 893}, {"partIndex": 0, "no": 12, "kind": "solo", "event": "Rumba", "performers": [{"name": "多羅尾晴子", "teacher": "小西雅司", "studio": "小西雅司ダンススタジオ"}], "duration": 3, "rehearsalStart": 628, "rehearsalEnd": 631, "showStart": 893, "showEnd": 896}, {"partIndex": 0, "no": 13, "kind": "solo", "event": "Slow Foxtrot", "performers": [{"name": "井上礼子", "teacher": "村澤俊也", "studio": null}], "duration": 3, "rehearsalStart": 631, "rehearsalEnd": 634, "showStart": 896, "showEnd": 899}, {"partIndex": 0, "no": 14, "kind": "solo", "event": "Slow Foxtrot", "performers": [{"name": "大平良子", "teacher": "梅原和之", "studio": null}], "duration": 3, "rehearsalStart": 634, "rehearsalEnd": 637, "showStart": 899, "showEnd": 902}, {"partIndex": 1, "no": 1, "kind": "solo", "event": "Rumba", "performers": [{"name": "入江真帆", "teacher": "村澤俊也", "studio": null}], "duration": 3, "rehearsalStart": 635, "rehearsalEnd": 638, "showStart": 910, "showEnd": 913}, {"partIndex": 1, "no": 2, "kind": "solo", "event": "Tango", "performers": [{"name": "御崎早苗", "teacher": "太田雅士", "studio": "ニシダダンススタジオ"}], "duration": 3, "rehearsalStart": 638, "rehearsalEnd": 641, "showStart": 913, "showEnd": 916}, {"partIndex": 1, "no": 3, "kind": "solo", "event": "Tango", "performers": [{"name": "服部初枝", "teacher": "梅原和之", "studio": null}], "duration": 3, "rehearsalStart": 641, "rehearsalEnd": 644, "showStart": 916, "showEnd": 919}, {"partIndex": 1, "no": 4, "kind": "solo", "event": "Waltz", "performers": [{"name": "小林廣人", "teacher": "松永ゆかり", "studio": "アカデミーオブダンス.ヨコタ"}], "duration": 3, "rehearsalStart": 644, "rehearsalEnd": 647, "showStart": 919, "showEnd": 922}, {"partIndex": 1, "no": 5, "kind": "solo", "event": "Show Dance", "performers": [{"name": "飯田峰子", "teacher": "永田勝規", "studio": "永田勝規ダンススタジオ"}], "duration": 3, "rehearsalStart": 647, "rehearsalEnd": 650, "showStart": 922, "showEnd": 925}, {"partIndex": 1, "no": 6, "kind": "solo", "event": "Slow Foxtrot", "performers": [{"name": "村上美幸", "teacher": "村澤俊也", "studio": null}], "duration": 3, "rehearsalStart": 650, "rehearsalEnd": 653, "showStart": 925, "showEnd": 928}, {"partIndex": 1, "no": 7, "kind": "solo", "event": "Waltz", "performers": [{"name": "矢木郁子", "teacher": "岩田健司", "studio": "岩田健司ダンススタジオ"}], "duration": 3, "rehearsalStart": 653, "rehearsalEnd": 656, "showStart": 928, "showEnd": 931}, {"partIndex": 1, "no": 8, "kind": "solo", "event": "Show Dance", "performers": [{"name": "江口裕子", "teacher": "小西雅司", "studio": "小西雅司ダンススタジオ"}], "duration": 3, "rehearsalStart": 656, "rehearsalEnd": 659, "showStart": 931, "showEnd": 934}, {"partIndex": 1, "no": 9, "kind": "solo", "event": "Samba", "performers": [{"name": "木村美恵子", "teacher": "西田克義", "studio": "ニシダダンススタジオ"}], "duration": 3, "rehearsalStart": 659, "rehearsalEnd": 662, "showStart": 934, "showEnd": 937}, {"partIndex": 1, "no": 10, "kind": "solo", "event": "Viennese Waltz", "performers": [{"name": "田村多津美", "teacher": "村澤俊也", "studio": null}], "duration": 3, "rehearsalStart": 662, "rehearsalEnd": 665, "showStart": 937, "showEnd": 940}, {"partIndex": 1, "no": 11, "kind": "solo", "event": "Show Dance", "performers": [{"name": "服部篤", "teacher": "川澄清香", "studio": "Dance Space SAKAE"}], "duration": 3, "rehearsalStart": 665, "rehearsalEnd": 668, "showStart": 940, "showEnd": 943}, {"partIndex": 1, "no": 12, "kind": "solo", "event": "Rumba", "performers": [{"name": "澤野聖子", "teacher": "永田勝規", "studio": "永田勝規ダンススタジオ"}], "duration": 3, "rehearsalStart": 668, "rehearsalEnd": 671, "showStart": 943, "showEnd": 946}, {"partIndex": 1, "no": 13, "kind": "solo", "event": "Slow Foxtrot", "performers": [{"name": "小杉依子", "teacher": "村澤俊也", "studio": null}], "duration": 3, "rehearsalStart": 671, "rehearsalEnd": 674, "showStart": 946, "showEnd": 949}, {"partIndex": 1, "no": 14, "kind": "solo", "event": "Rumba", "performers": [{"name": "伊藤麻子", "teacher": "小宮一浩", "studio": "DANCE STUDIO B&G"}], "duration": 3, "rehearsalStart": 674, "rehearsalEnd": 677, "showStart": 949, "showEnd": 952}, {"partIndex": 1, "no": 15, "kind": "solo", "event": "Tango", "performers": [{"name": "織田冨美子", "teacher": "小西雅司", "studio": "小西雅司ダンススタジオ"}], "duration": 3, "rehearsalStart": 677, "rehearsalEnd": 680, "showStart": 952, "showEnd": 955}, {"partIndex": 1, "no": 16, "kind": "solo", "event": "Waltz", "performers": [{"name": "堀友子", "teacher": "岩田健司", "studio": "岩田健司ダンススタジオ"}], "duration": 3, "rehearsalStart": 680, "rehearsalEnd": 683, "showStart": 955, "showEnd": 958}, {"partIndex": 1, "no": 17, "kind": "solo", "event": "Show Dance", "performers": [{"name": "坂口恵子", "teacher": "瀬内英幸", "studio": "dance studio VIVAILA"}], "duration": 3, "rehearsalStart": 683, "rehearsalEnd": 686, "showStart": 958, "showEnd": 961}, {"partIndex": 1, "no": 18, "kind": "solo", "event": "Show Dance", "performers": [{"name": "大平良子", "teacher": "澤田健一", "studio": "サワダダンススタジオ"}], "duration": 3, "rehearsalStart": 686, "rehearsalEnd": 689, "showStart": 961, "showEnd": 964}, {"partIndex": 1, "no": 19, "kind": "solo", "event": "Show Dance", "performers": [{"name": "間瀬美予子", "teacher": "梅原和之", "studio": null}], "duration": 3, "rehearsalStart": 689, "rehearsalEnd": 692, "showStart": 964, "showEnd": 967}, {"partIndex": 2, "no": 1, "kind": "solo", "event": "Slow Foxtrot", "performers": [{"name": "山下美津子", "teacher": "村澤俊也", "studio": null}], "duration": 3, "rehearsalStart": 695, "rehearsalEnd": 698, "showStart": 980, "showEnd": 983}, {"partIndex": 2, "no": 2, "kind": "solo", "event": "Show Dance", "performers": [{"name": "近松眞由美", "teacher": "永田勝規", "studio": "永田勝規ダンススタジオ"}], "duration": 3, "rehearsalStart": 698, "rehearsalEnd": 701, "showStart": 983, "showEnd": 986}, {"partIndex": 2, "no": 3, "kind": "solo", "event": "Slow Foxtrot", "performers": [{"name": "浅井廣子", "teacher": "柴山和樹", "studio": "DANCE STUDIO B&G"}], "duration": 3, "rehearsalStart": 701, "rehearsalEnd": 704, "showStart": 986, "showEnd": 989}, {"partIndex": 2, "no": 4, "kind": "solo", "event": "Slow Foxtrot", "performers": [{"name": "吉田美千代", "teacher": "小西雅司", "studio": "小西雅司ダンススタジオ"}], "duration": 3, "rehearsalStart": 704, "rehearsalEnd": 707, "showStart": 989, "showEnd": 992}, {"partIndex": 2, "no": 5, "kind": "solo", "event": "QuickStep", "performers": [{"name": "雪いく子", "teacher": "岩田健司", "studio": "岩田健司ダンススタジオ"}], "duration": 3, "rehearsalStart": 707, "rehearsalEnd": 710, "showStart": 992, "showEnd": 995}, {"partIndex": 2, "no": 6, "kind": "solo", "event": "Slow Foxtrot", "performers": [{"name": "小杉依子", "teacher": "梅原和之", "studio": null}], "duration": 3, "rehearsalStart": 710, "rehearsalEnd": 713, "showStart": 995, "showEnd": 998}, {"partIndex": 2, "no": 7, "kind": "solo", "event": "Samba", "performers": [{"name": "新美龍人", "teacher": "平岩英里", "studio": "DANCE STUDIO B&G"}], "duration": 3, "rehearsalStart": 713, "rehearsalEnd": 716, "showStart": 998, "showEnd": 1001}, {"partIndex": 2, "no": 8, "kind": "solo", "event": "Tango", "performers": [{"name": "小野和子", "teacher": "村澤俊也", "studio": null}], "duration": 3, "rehearsalStart": 716, "rehearsalEnd": 719, "showStart": 1001, "showEnd": 1004}, {"partIndex": 2, "no": 9, "kind": "solo", "event": "Slow Foxtrot", "performers": [{"name": "友成和子", "teacher": "太田雅士", "studio": "ニシダダンススタジオ"}], "duration": 3, "rehearsalStart": 719, "rehearsalEnd": 722, "showStart": 1004, "showEnd": 1007}, {"partIndex": 2, "no": 10, "kind": "solo", "event": "ChaChaCha", "performers": [{"name": "石田和枝", "teacher": "金原亮司", "studio": "小西雅司ダンススタジオ"}], "duration": 3, "rehearsalStart": 722, "rehearsalEnd": 725, "showStart": 1007, "showEnd": 1010}, {"partIndex": 2, "no": 11, "kind": "solo", "event": "海から生まれしもの", "performers": [{"name": "小島博子", "teacher": "瀬内英幸", "studio": "dance studio VIVAILA"}], "duration": 3, "rehearsalStart": 725, "rehearsalEnd": 728, "showStart": 1010, "showEnd": 1013}, {"partIndex": 2, "no": 12, "kind": "solo", "event": "Show Dance", "performers": [{"name": "蘭洋子", "teacher": "永田勝規", "studio": "永田勝規ダンススタジオ"}], "duration": 3, "rehearsalStart": 728, "rehearsalEnd": 731, "showStart": 1013, "showEnd": 1016}, {"partIndex": 2, "no": 13, "kind": "solo", "event": "Rumba", "performers": [{"name": "柴田訓枝", "teacher": "横田哲也", "studio": "アカデミーオブダンス.ヨコタ"}], "duration": 3, "rehearsalStart": 731, "rehearsalEnd": 734, "showStart": 1016, "showEnd": 1019}, {"partIndex": 2, "no": 14, "kind": "solo", "event": "Waltz", "performers": [{"name": "間瀬多美", "teacher": "西田克義", "studio": "ニシダダンススタジオ"}], "duration": 3, "rehearsalStart": 734, "rehearsalEnd": 737, "showStart": 1019, "showEnd": 1022}, {"partIndex": 2, "no": 15, "kind": "solo", "event": "Show Dance", "performers": [{"name": "大平良子", "teacher": "小宮一浩", "studio": "DANCE STUDIO B&G"}], "duration": 3, "rehearsalStart": 737, "rehearsalEnd": 740, "showStart": 1022, "showEnd": 1025}, {"partIndex": 2, "no": 16, "kind": "solo", "event": "Rumba", "performers": [{"name": "服部篤", "teacher": "寺尾理江", "studio": "サワダダンススタジオ"}], "duration": 3, "rehearsalStart": 740, "rehearsalEnd": 743, "showStart": 1025, "showEnd": 1028}, {"partIndex": 2, "no": 17, "kind": "solo", "event": "Slow Foxtrot", "performers": [{"name": "若園さくら", "teacher": "岩田健司", "studio": "岩田健司ダンススタジオ"}], "duration": 3, "rehearsalStart": 743, "rehearsalEnd": 746, "showStart": 1028, "showEnd": 1031}, {"partIndex": 2, "no": 18, "kind": "solo", "event": "Waltz", "performers": [{"name": "入江真帆", "teacher": "村澤俊也", "studio": null}], "duration": 3, "rehearsalStart": 746, "rehearsalEnd": 749, "showStart": 1031, "showEnd": 1034}, {"partIndex": 2, "no": 19, "kind": "solo", "event": "Tango", "performers": [{"name": "多羅尾晴子", "teacher": "小西雅司", "studio": "小西雅司ダンススタジオ"}], "duration": 3, "rehearsalStart": 749, "rehearsalEnd": 752, "showStart": 1034, "showEnd": 1037}, {"partIndex": 2, "no": 20, "kind": "solo", "event": "ChaChaCha", "performers": [{"name": "日比谷節子", "teacher": "澤田健一", "studio": "サワダダンススタジオ"}], "duration": 3, "rehearsalStart": 752, "rehearsalEnd": 755, "showStart": 1037, "showEnd": 1040}, {"partIndex": 2, "no": 21, "kind": "solo", "event": "Show Dance", "performers": [{"name": "増井由美", "teacher": "梅原和之", "studio": null}], "duration": 3, "rehearsalStart": 755, "rehearsalEnd": 758, "showStart": 1040, "showEnd": 1043}]};
@@ -425,6 +457,37 @@ const SCHEDULE = {"eventId": "umehara-summer-2026", "showStartMin": 840, "showEn
   function adjusted(minAbs, phase) {
     return minAbs + (drift.phase === phase ? drift.offsetMin : 0);
   }
+  // ---------- in-app confirm modal (works even when window.confirm is sandboxed) ----------
+  function showConfirm(message) {
+    return new Promise((resolve) => {
+      const overlay = document.getElementById("confirmOverlay");
+      const msgEl = document.getElementById("confirmMessage");
+      const okBtn = document.getElementById("confirmOkBtn");
+      const cancelBtn = document.getElementById("confirmCancelBtn");
+      if (!overlay || !msgEl || !okBtn || !cancelBtn) {
+        resolve(false);
+        return;
+      }
+      msgEl.textContent = message;
+      overlay.style.display = "flex";
+      const cleanup = (result) => {
+        overlay.style.display = "none";
+        okBtn.removeEventListener("click", onOk);
+        cancelBtn.removeEventListener("click", onCancel);
+        overlay.removeEventListener("click", onOverlayClick);
+        resolve(result);
+      };
+      const onOk = () => cleanup(true);
+      const onCancel = () => cleanup(false);
+      const onOverlayClick = (e) => {
+        if (e.target === overlay) cleanup(false);
+      };
+      okBtn.addEventListener("click", onOk);
+      cancelBtn.addEventListener("click", onCancel);
+      overlay.addEventListener("click", onOverlayClick);
+    });
+  }
+
   function syncToItem(item) {
     const now = new Date();
     const nowMin = now.getHours() * 60 + now.getMinutes() + now.getSeconds() / 60;
@@ -434,10 +497,15 @@ const SCHEDULE = {"eventId": "umehara-summer-2026", "showStartMin": 840, "showEn
     const scheduled = phase === "rehearsal" ? item.rehearsalStart : item.showStart;
     const offsetMin = Math.round(nowMin - scheduled);
     const part = partList.find((p) => p.partIndex === item.partIndex);
-    drift = { phase, offsetMin, label: (part ? partShortTitle(part.title) : "") + "　" + item.no + "番" };
-    saveDrift();
-    renderDriftBanner();
-    refreshAllDisplays();
+    const label = (part ? partShortTitle(part.title) : "") + "　" + item.no + "番";
+    const sign = offsetMin >= 0 ? "+" : "";
+    showConfirm(`${label}（${PHASE_NAME[phase]}）を基準に、${sign}${offsetMin}分補正します。\nよろしいですか？`).then((confirmed) => {
+      if (!confirmed) return;
+      drift = { phase, offsetMin, label };
+      saveDrift();
+      renderDriftBanner();
+      refreshAllDisplays();
+    });
   }
   function clearDrift() {
     drift = { phase: null, offsetMin: 0, label: "" };
@@ -515,7 +583,7 @@ const SCHEDULE = {"eventId": "umehara-summer-2026", "showStartMin": 840, "showEn
   const phaseLabelEl = document.getElementById("phaseLabel");
 
   let activeTab = "fav";
-  const openParts = new Set([0]);
+  const openParts = new Set();
 
   function setTab(tab) {
     activeTab = tab;
@@ -664,7 +732,7 @@ const SCHEDULE = {"eventId": "umehara-summer-2026", "showStartMin": 840, "showEn
           </div>`
       )
       .join("");
-    const proshow = showSections.find((s) => s.type === "proshow");
+    const proshow = showSections.find((s) => s.type === "proshow" && s.label.includes("プロショー"));
     const proRehearsalChip = rehearsalSections.find((s) => s.type === "pro_rehearsal");
 
     panelAll.innerHTML = `
