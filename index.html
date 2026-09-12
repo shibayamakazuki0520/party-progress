@@ -922,7 +922,7 @@ const SCHEDULE = {"eventId": "nakagawa-yuta-14th", "showStartMin": 780, "showEnd
             <div class="fav-info">
               <div class="fav-order-label">${esc(partLabel)}　${f.item.no}番</div>
               <div class="fav-name">${performerName(f.name, f.item)}</div>
-              <div class="fav-meta">${esc(f.item.event)}${subMeta}</div>
+              <div class="fav-meta"><span class="kind-badge ${f.item.kind}">${KIND_LABEL[f.item.kind]}</span> ${esc(f.item.event)}${subMeta}</div>
             </div>
             <button class="fav-star-btn" data-key="${esc(f.key)}" title="お気に入り解除">★</button>
           </div>
