@@ -95,6 +95,9 @@ header.app-header{
 }
 .theme-toggle svg{ width:18px; height:18px; }
 .theme-toggle:active{ background: rgba(255,255,255,.3); }
+.starbucks-header-btn{
+  right: 42px;
+}
 .eyebrow{
   font-size: 11px; letter-spacing: .12em; color: var(--gold-soft);
   display:flex; align-items:center; gap:8px; margin-bottom: 2px;
@@ -361,6 +364,17 @@ main{ max-width: 640px; margin: 0 auto; padding: 16px; }
 .live-performers{ margin-top:14px; display:flex; flex-direction:column; gap:8px; }
 .live-performer-name{ font-size:18px; font-weight:700; color: var(--ink); }
 .live-performer-teacher{ font-size:12.5px; color: var(--ink-soft); }
+.break-actions{ margin-top:18px; padding-top:16px; border-top:1px dashed var(--line); }
+.break-actions-title{ font-size:13px; font-weight:700; color: var(--ink-soft); margin-bottom:10px; }
+.break-btn{
+  display:block; width:100%; padding: 12px; margin-bottom:8px;
+  border-radius:10px; font-family:inherit; font-size:14px; font-weight:700;
+  border:none; cursor:pointer;
+}
+.break-btn:last-of-type{ margin-bottom:0; }
+.break-btn.map{ background:#00704A; color:#fff; }
+.break-btn.order{ background:transparent; color:#00704A; border:1.5px solid #00704A; }
+.break-actions-status{ font-size:11.5px; color: var(--ink-soft); margin-top:6px; min-height:14px; }
 .live-note-card{
   background: var(--surface); border-radius: var(--radius); box-shadow: var(--shadow);
   padding: 20px 18px; border: 1px solid var(--line); text-align:center;
@@ -403,6 +417,9 @@ main{ max-width: 640px; margin: 0 auto; padding: 16px; }
 <header class="app-header">
   <div class="header-inner">
     <button id="themeToggleBtn" class="theme-toggle" aria-label="ダークモード切り替え"></button>
+    <button id="starbucksHeaderBtn" class="theme-toggle starbucks-header-btn" aria-label="休憩タイムに">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 8h13v6a5 5 0 0 1-5 5H9a5 5 0 0 1-5-5V8Z"/><path d="M17 9h1.5a2.5 2.5 0 0 1 0 5H17"/><path d="M8 4c0 1 1 1 1 2s-1 1-1 2M12 4c0 1 1 1 1 2s-1 1-1 2"/></svg>
+    </button>
     <div class="eyebrow">
       <svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="4" stroke="currentColor" stroke-width="1.6"/><path d="M12 2v3M12 19v3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M2 12h3M19 12h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
       <span>NAKAGAWA YUTA DANCE ACADEMY</span>
@@ -460,6 +477,16 @@ main{ max-width: 640px; margin: 0 auto; padding: 16px; }
       <button id="confirmCancelBtn" class="confirm-btn cancel">キャンセル</button>
       <button id="confirmOkBtn" class="confirm-btn ok">補正する</button>
     </div>
+  </div>
+</div>
+
+<div id="starbucksOverlay" class="confirm-overlay" style="display:none;">
+  <div class="confirm-card">
+    <div class="break-actions-title">☕ 休憩タイムに</div>
+    <button class="break-btn map" id="findStarbucksBtn">近くのスタバを探す</button>
+    <button class="break-btn order" id="starbucksOrderBtn">Web注文ページを開く</button>
+    <div class="break-actions-status" id="starbucksStatus"></div>
+    <button class="confirm-btn cancel" id="starbucksCloseBtn" style="margin-top:6px;">閉じる</button>
   </div>
 </div>
 
@@ -825,6 +852,34 @@ const SCHEDULE = {"eventId": "nakagawa-yuta-14th", "showStartMin": 780, "showEnd
     }
 
     panelCurrent.innerHTML = liveHtml + upcomingHtml;
+  }
+
+  function findNearbyStarbucks() {
+    const statusEl = document.getElementById("starbucksStatus");
+    if (!navigator.geolocation) {
+      if (statusEl) statusEl.textContent = "位置情報が使えないため、周辺検索で開きます";
+      window.open("https://www.google.com/maps/search/?api=1&query=スターバックス", "_blank");
+      return;
+    }
+    if (statusEl) statusEl.textContent = "現在地を取得中...";
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        const lat = pos.coords.latitude;
+        const lng = pos.coords.longitude;
+        const url = `https://www.google.com/maps/search/starbucks/@${lat},${lng},15z`;
+        if (statusEl) statusEl.textContent = "";
+        window.open(url, "_blank");
+      },
+      () => {
+        if (statusEl) statusEl.textContent = "位置情報を取得できなかったため、周辺検索で開きます";
+        window.open("https://www.google.com/maps/search/?api=1&query=スターバックス", "_blank");
+      },
+      { enableHighAccuracy: false, timeout: 8000 }
+    );
+  }
+
+  function openStarbucksOrder() {
+    window.open("https://www.starbucks.co.jp/mobileorder/guide/", "_blank");
   }
 
   function esc(s) {
@@ -1221,6 +1276,25 @@ const SCHEDULE = {"eventId": "nakagawa-yuta-14th", "showStartMin": 780, "showEnd
     });
   }
   applyTheme();
+
+  // ---------- starbucks header popup ----------
+  const starbucksHeaderBtn = document.getElementById("starbucksHeaderBtn");
+  const starbucksOverlay = document.getElementById("starbucksOverlay");
+  if (starbucksHeaderBtn && starbucksOverlay) {
+    starbucksHeaderBtn.addEventListener("click", () => {
+      document.getElementById("starbucksStatus").textContent = "";
+      starbucksOverlay.style.display = "flex";
+    });
+    const closeBtn = document.getElementById("starbucksCloseBtn");
+    if (closeBtn) closeBtn.addEventListener("click", () => (starbucksOverlay.style.display = "none"));
+    starbucksOverlay.addEventListener("click", (e) => {
+      if (e.target === starbucksOverlay) starbucksOverlay.style.display = "none";
+    });
+    const mapBtn = document.getElementById("findStarbucksBtn");
+    const orderBtn = document.getElementById("starbucksOrderBtn");
+    if (mapBtn) mapBtn.addEventListener("click", findNearbyStarbucks);
+    if (orderBtn) orderBtn.addEventListener("click", openStarbucksOrder);
+  }
 
   // ---------- back to top ----------
   const backToTopBtn = document.getElementById("backToTopBtn");
