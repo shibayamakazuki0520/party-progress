@@ -933,7 +933,23 @@ const SCHEDULE = {"eventId": "nakagawa-yuta-14th", "showStartMin": 780, "showEnd
   }
 
   // ---------- favorites panel ----------
+  function favSortKey(item, nowMin) {
+    const rStart = item.rehearsalStart != null ? adjusted(item.rehearsalStart, "rehearsal") : null;
+    const rEnd = item.rehearsalStart != null ? adjusted(item.rehearsalEnd, "rehearsal") : null;
+    const sStart = adjusted(item.showStart, "show");
+    const sEnd = adjusted(item.showEnd, "show");
+    if (rStart != null && nowMin >= rStart && nowMin < rEnd) return -2;
+    if (nowMin >= sStart && nowMin < sEnd) return -1;
+    const upcoming = [];
+    if (rStart != null && nowMin < rStart) upcoming.push(rStart);
+    if (nowMin < sStart) upcoming.push(sStart);
+    if (upcoming.length > 0) return Math.min(...upcoming);
+    return 100000 + sEnd; // both phases finished: push to bottom, latest-finished last
+  }
+
   function renderFavPanel() {
+    const now = new Date();
+    const nowMin = now.getHours() * 60 + now.getMinutes() + now.getSeconds() / 60;
     const favItems = [];
     items.forEach((item) => {
       item.performers.forEach((p) => {
@@ -941,7 +957,7 @@ const SCHEDULE = {"eventId": "nakagawa-yuta-14th", "showStartMin": 780, "showEnd
         if (favorites.has(key)) favItems.push({ item, name: p.name, teacher: p.teacher, studio: p.studio, key });
       });
     });
-    favItems.sort((a, b) => a.item.showStart - b.item.showStart);
+    favItems.sort((a, b) => favSortKey(a.item, nowMin) - favSortKey(b.item, nowMin));
     favCountEl.textContent = favItems.length;
 
     if (favItems.length === 0) {
@@ -1319,7 +1335,11 @@ const SCHEDULE = {"eventId": "nakagawa-yuta-14th", "showStartMin": 780, "showEnd
   tickClock();
   setInterval(tickClock, 1000);
   setInterval(() => {
-    updateLiveBlocks();
+    if (activeTab === "fav") {
+      renderFavPanel();
+    } else {
+      updateLiveBlocks();
+    }
     renderNextUpBar();
     if (activeTab === "current") renderCurrentPanel();
   }, 15000);
