@@ -167,8 +167,8 @@ header{
   flex:1;
   border:none;
   background:transparent;
-  padding: 12px 6px;
-  font-size: 13px;
+  padding: 12px 4px;
+  font-size: 11.5px;
   font-weight: 700;
   color: var(--ink-soft);
   cursor:pointer;
@@ -188,22 +188,82 @@ header{
   line-height: 1.8;
 }
 
-.student-chips{ display:flex; gap:8px; margin-bottom: 12px; flex-wrap:wrap; }
-.student-chip{
-  border: 1.5px solid var(--chip-color, var(--line));
+#participantSearch{
+  width:100%;
+  padding: 10px 14px;
+  border-radius: 10px;
+  border: 1px solid var(--line);
   background: var(--surface);
-  color: var(--chip-color, var(--ink));
-  padding: 8px 14px;
-  border-radius: 999px;
+  color: var(--ink);
   font-size: 13px;
-  font-weight: 700;
-  cursor:pointer;
+  margin-bottom: 12px;
   font-family: inherit;
 }
-.student-chip.active{
-  background: var(--chip-soft, var(--blush-soft));
+#participantSearchCount{
+  font-size: 11.5px;
+  font-weight: 700;
+  color: var(--wine-deep);
+  margin: -6px 2px 10px;
 }
-.chip-star{ margin-right: 2px; }
+.participant-row{
+  display:flex;
+  align-items:center;
+  gap: 10px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 10px 12px;
+  margin-bottom: 8px;
+}
+.participant-row.is-fav{
+  border-color: var(--wine-deep);
+  background: var(--blush-soft);
+}
+.participant-no{
+  font-family: "Zen Kaku Gothic New", -apple-system, "Hiragino Sans", "Yu Gothic", sans-serif;
+  font-variant-numeric: tabular-nums;
+  font-weight: 900;
+  color: var(--wine-deep);
+  min-width: 30px;
+  font-size: 14px;
+}
+.participant-body{ flex:1; min-width:0; }
+.participant-name{ font-size: 14px; font-weight: 700; }
+.participant-teacher{ font-size: 11px; color: var(--ink-soft); margin-top: 2px; }
+.participant-fav-btn{
+  border:none;
+  background: var(--reh-chip-bg);
+  color: var(--wine-deep);
+  font-size: 18px;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  cursor:pointer;
+  flex-shrink:0;
+}
+.participant-fav-btn.active{
+  background: var(--wine-deep);
+  color: #fff;
+}
+
+.roster-fav-btn{
+  border:none;
+  background: transparent;
+  color: var(--wine-deep);
+  font-size: 14px;
+  cursor:pointer;
+  padding: 2px 4px;
+  flex-shrink:0;
+}
+.roster-fav-btn.active{ color: var(--wine-deep); }
+
+.fav-badge{
+  background: var(--gold-soft);
+  color: var(--wine-deep);
+  border-color: var(--wine-deep)33;
+}
+
+.live-roster-inline{ margin-top: 6px; }
 
 .fav-card{
   display:flex;
@@ -221,9 +281,11 @@ header{
   box-shadow: 0 0 0 2px rgba(255,45,120,0.15);
 }
 .fav-time{
-  font-family: "Cormorant Garamond", serif;
-  font-size: 26px;
-  font-weight: 700;
+  font-family: "Zen Kaku Gothic New", -apple-system, "Hiragino Sans", "Yu Gothic", sans-serif;
+  font-variant-numeric: tabular-nums;
+  font-size: 24px;
+  font-weight: 900;
+  letter-spacing: 0.5px;
   color: var(--wine-deep);
   min-width: 62px;
 }
@@ -436,7 +498,14 @@ header{
   50%{ opacity:.25; }
 }
 .live-label{ font-size:11px; color: var(--pink); font-weight:700; letter-spacing:2px; margin-bottom:6px;}
-.live-time{ font-family:"Cormorant Garamond",serif; font-size:28px; font-weight:700; color: var(--wine-deep); }
+.live-time{
+  font-family: "Zen Kaku Gothic New", -apple-system, "Hiragino Sans", "Yu Gothic", sans-serif;
+  font-variant-numeric: tabular-nums;
+  font-size: 26px;
+  font-weight: 900;
+  letter-spacing: 0.5px;
+  color: var(--wine-deep);
+}
 .live-title{ font-size: 16px; font-weight:700; margin-top:4px; }
 .live-heats{ font-size:11.5px; color:var(--ink-soft); margin-top:2px; }
 .live-badges{ display:flex; gap:4px; justify-content:center; flex-wrap:wrap; margin-top:8px; }
@@ -556,13 +625,19 @@ footer{
 
 <div class="tabs">
   <button class="tab-btn active" data-tab="fav">お気に入り</button>
+  <button class="tab-btn" data-tab="participants">出場者</button>
   <button class="tab-btn" data-tab="timetable">全体タイムテーブル</button>
   <button class="tab-btn" data-tab="current">現在進行中</button>
 </div>
 
 <div class="tab-panel" id="panelFav">
-  <div class="student-chips" id="studentChips"></div>
   <div id="panelFavList"></div>
+</div>
+
+<div class="tab-panel" id="panelParticipants" style="display:none;">
+  <input type="text" id="participantSearch" placeholder="出場者名・教師名・No.で検索">
+  <div id="participantSearchCount" style="display:none;"></div>
+  <div id="participantList"></div>
 </div>
 
 <div class="tab-panel" id="panelTimetable" style="display:none;">
@@ -633,6 +708,903 @@ window.__SCHEDULE_DATA__ = {
       "entryNo": 61
     }
   },
+  "participants": [
+    {
+      "entryNo": 1,
+      "name": "野口一葉",
+      "teachers": [
+        "松浦真吾"
+      ]
+    },
+    {
+      "entryNo": 2,
+      "name": "上山幸子",
+      "teachers": [
+        "藤家浩史"
+      ]
+    },
+    {
+      "entryNo": 3,
+      "name": "堀由美",
+      "teachers": [
+        "藤家浩史"
+      ]
+    },
+    {
+      "entryNo": 4,
+      "name": "村瀬悦子",
+      "teachers": [
+        "松浦真吾"
+      ]
+    },
+    {
+      "entryNo": 5,
+      "name": "浩禾玲衣",
+      "teachers": [
+        "庄司浩太"
+      ]
+    },
+    {
+      "entryNo": 6,
+      "name": "尾上益美",
+      "teachers": [
+        "松浦真吾"
+      ]
+    },
+    {
+      "entryNo": 7,
+      "name": "樋口直子",
+      "teachers": [
+        "中村隆裕"
+      ]
+    },
+    {
+      "entryNo": 8,
+      "name": "狭間葵",
+      "teachers": [
+        "中村隆裕"
+      ]
+    },
+    {
+      "entryNo": 9,
+      "name": "MASAYO",
+      "teachers": [
+        "鈴木奨太"
+      ]
+    },
+    {
+      "entryNo": 10,
+      "name": "堀田伸子",
+      "teachers": [
+        "岡俊宏"
+      ]
+    },
+    {
+      "entryNo": 11,
+      "name": "髙木克之",
+      "teachers": [
+        "岡瑞紀"
+      ]
+    },
+    {
+      "entryNo": 12,
+      "name": "伊藤正浩",
+      "teachers": [
+        "池田有妃"
+      ]
+    },
+    {
+      "entryNo": 13,
+      "name": "佐野礼子",
+      "teachers": [
+        "山田吏駒"
+      ]
+    },
+    {
+      "entryNo": 14,
+      "name": "佐藤美幸",
+      "teachers": [
+        "山田吏駒"
+      ]
+    },
+    {
+      "entryNo": 15,
+      "name": "畔柳まゆみ",
+      "teachers": [
+        "浅村慎太郎"
+      ]
+    },
+    {
+      "entryNo": 16,
+      "name": "市川麗",
+      "teachers": [
+        "浅村慎太郎"
+      ]
+    },
+    {
+      "entryNo": 17,
+      "name": "滝幸子",
+      "teachers": [
+        "柴山和樹"
+      ]
+    },
+    {
+      "entryNo": 18,
+      "name": "毛受小枝子",
+      "teachers": [
+        "柴山和樹"
+      ]
+    },
+    {
+      "entryNo": 19,
+      "name": "仲圭子",
+      "teachers": [
+        "小西雅司",
+        "柴山和樹"
+      ]
+    },
+    {
+      "entryNo": 20,
+      "name": "大藪三世子",
+      "teachers": [
+        "岡俊宏"
+      ]
+    },
+    {
+      "entryNo": 21,
+      "name": "久保美穂",
+      "teachers": [
+        "岡俊宏"
+      ]
+    },
+    {
+      "entryNo": 22,
+      "name": "佐藤日奈子",
+      "teachers": [
+        "岡俊宏"
+      ]
+    },
+    {
+      "entryNo": 23,
+      "name": "林勝己",
+      "teachers": [
+        "永原由貴"
+      ]
+    },
+    {
+      "entryNo": 24,
+      "name": "東美和子",
+      "teachers": [
+        "永原由貴"
+      ]
+    },
+    {
+      "entryNo": 25,
+      "name": "らるっちぃ",
+      "teachers": [
+        "永原由貴"
+      ]
+    },
+    {
+      "entryNo": 26,
+      "name": "大塚真理子",
+      "teachers": [
+        "松浦真吾"
+      ]
+    },
+    {
+      "entryNo": 27,
+      "name": "海原優太",
+      "teachers": [
+        "+奥田大地"
+      ]
+    },
+    {
+      "entryNo": 28,
+      "name": "小林廣人",
+      "teachers": [
+        "松永ゆかり"
+      ]
+    },
+    {
+      "entryNo": 30,
+      "name": "井上久美子",
+      "teachers": [
+        "岡俊宏"
+      ]
+    },
+    {
+      "entryNo": 31,
+      "name": "福井悠樹",
+      "teachers": [
+        "塚本郁子"
+      ]
+    },
+    {
+      "entryNo": 32,
+      "name": "植草理恵子",
+      "teachers": [
+        "塚本郁子"
+      ]
+    },
+    {
+      "entryNo": 33,
+      "name": "橋本佳代",
+      "teachers": [
+        "金原亮司"
+      ]
+    },
+    {
+      "entryNo": 34,
+      "name": "猪子真弓",
+      "teachers": [
+        "金原亮司"
+      ]
+    },
+    {
+      "entryNo": 35,
+      "name": "反端あゆみ",
+      "teachers": [
+        "金原亮司"
+      ]
+    },
+    {
+      "entryNo": 36,
+      "name": "村上久美子",
+      "teachers": [
+        "金原亮司"
+      ]
+    },
+    {
+      "entryNo": 37,
+      "name": "古林美紀子",
+      "teachers": [
+        "金原亮司"
+      ]
+    },
+    {
+      "entryNo": 38,
+      "name": "浅野楓",
+      "teachers": [
+        "塚本郁子"
+      ]
+    },
+    {
+      "entryNo": 39,
+      "name": "山口布佐子",
+      "teachers": [
+        "岡ひろみ"
+      ]
+    },
+    {
+      "entryNo": 40,
+      "name": "中根あさひ",
+      "teachers": [
+        "ソロ"
+      ]
+    },
+    {
+      "entryNo": 41,
+      "name": "河北直美",
+      "teachers": [
+        "小西雅司"
+      ]
+    },
+    {
+      "entryNo": 42,
+      "name": "ニキータ",
+      "teachers": [
+        "小西雅司"
+      ]
+    },
+    {
+      "entryNo": 43,
+      "name": "沖田裕子",
+      "teachers": [
+        "小西雅司"
+      ]
+    },
+    {
+      "entryNo": 44,
+      "name": "中嶋政子",
+      "teachers": [
+        "生田和也"
+      ]
+    },
+    {
+      "entryNo": 45,
+      "name": "河合和代",
+      "teachers": [
+        "生田和也"
+      ]
+    },
+    {
+      "entryNo": 46,
+      "name": "辰巳則子",
+      "teachers": [
+        "小西揚子"
+      ]
+    },
+    {
+      "entryNo": 47,
+      "name": "岡本佳子",
+      "teachers": [
+        "小西雅司",
+        "早川元規"
+      ]
+    },
+    {
+      "entryNo": 48,
+      "name": "山口真代",
+      "teachers": [
+        "竹内大祐"
+      ]
+    },
+    {
+      "entryNo": 49,
+      "name": "鈴木理子",
+      "teachers": [
+        "竹内大祐"
+      ]
+    },
+    {
+      "entryNo": 50,
+      "name": "八木多賀弥",
+      "teachers": [
+        "安藤裕一"
+      ]
+    },
+    {
+      "entryNo": 51,
+      "name": "塩島千草",
+      "teachers": [
+        "安藤裕一"
+      ]
+    },
+    {
+      "entryNo": 52,
+      "name": "近藤綾子",
+      "teachers": [
+        "竹内大祐"
+      ]
+    },
+    {
+      "entryNo": 53,
+      "name": "水野えいみ",
+      "teachers": [
+        "宮田敬三"
+      ]
+    },
+    {
+      "entryNo": 54,
+      "name": "谷薫",
+      "teachers": [
+        "小西雅司"
+      ]
+    },
+    {
+      "entryNo": 55,
+      "name": "柴田訓枝",
+      "teachers": [
+        "横田哲也"
+      ]
+    },
+    {
+      "entryNo": 56,
+      "name": "松尾ひろ子",
+      "teachers": [
+        "横田哲也"
+      ]
+    },
+    {
+      "entryNo": 57,
+      "name": "松本照美",
+      "teachers": [
+        "山本章格"
+      ]
+    },
+    {
+      "entryNo": 58,
+      "name": "時水良子",
+      "teachers": [
+        "田中徹"
+      ]
+    },
+    {
+      "entryNo": 60,
+      "name": "中山典子",
+      "teachers": [
+        "平柳諒悟"
+      ]
+    },
+    {
+      "entryNo": 61,
+      "name": "中馬薫",
+      "teachers": [
+        "平岩英里"
+      ]
+    },
+    {
+      "entryNo": 62,
+      "name": "秋田彩花",
+      "teachers": [
+        "加藤輝"
+      ]
+    },
+    {
+      "entryNo": 63,
+      "name": "山本博美",
+      "teachers": [
+        "横田哲也"
+      ]
+    },
+    {
+      "entryNo": 64,
+      "name": "村上美幸",
+      "teachers": [
+        "飯沼敏行"
+      ]
+    },
+    {
+      "entryNo": 65,
+      "name": "杉浦亜子",
+      "teachers": [
+        "岩本憲幸"
+      ]
+    },
+    {
+      "entryNo": 66,
+      "name": "山﨑よし子",
+      "teachers": [
+        "岩本憲幸"
+      ]
+    },
+    {
+      "entryNo": 67,
+      "name": "村上千代恵",
+      "teachers": [
+        "郡築順也"
+      ]
+    },
+    {
+      "entryNo": 68,
+      "name": "古川直美",
+      "teachers": [
+        "郡築順也"
+      ]
+    },
+    {
+      "entryNo": 69,
+      "name": "森洋子",
+      "teachers": [
+        "郡築順也"
+      ]
+    },
+    {
+      "entryNo": 70,
+      "name": "渡邉紗代",
+      "teachers": [
+        "郡築順也"
+      ]
+    },
+    {
+      "entryNo": 71,
+      "name": "中島はるみ",
+      "teachers": [
+        "平柳諒悟"
+      ]
+    },
+    {
+      "entryNo": 72,
+      "name": "長曽和代",
+      "teachers": [
+        "平柳諒悟"
+      ]
+    },
+    {
+      "entryNo": 73,
+      "name": "杉浦美保",
+      "teachers": [
+        "瀬内英幸"
+      ]
+    },
+    {
+      "entryNo": 74,
+      "name": "水野淳子",
+      "teachers": [
+        "瀬内英幸"
+      ]
+    },
+    {
+      "entryNo": 75,
+      "name": "後藤由佳",
+      "teachers": [
+        "瀬内英幸"
+      ]
+    },
+    {
+      "entryNo": 76,
+      "name": "伊藤三千代",
+      "teachers": [
+        "瀬内英幸"
+      ]
+    },
+    {
+      "entryNo": 78,
+      "name": "伊藤篤子",
+      "teachers": [
+        "瀬内英幸"
+      ]
+    },
+    {
+      "entryNo": 79,
+      "name": "山本和美",
+      "teachers": [
+        "宮田敬三"
+      ]
+    },
+    {
+      "entryNo": 80,
+      "name": "山之内孝",
+      "teachers": [
+        "村井万理"
+      ]
+    },
+    {
+      "entryNo": 81,
+      "name": "庄屋貴鳳",
+      "teachers": [
+        "田川貴一"
+      ]
+    },
+    {
+      "entryNo": 82,
+      "name": "蟹江杏樹",
+      "teachers": [
+        "+大石彩世"
+      ]
+    },
+    {
+      "entryNo": 83,
+      "name": "日髙芽生",
+      "teachers": [
+        "ソロ",
+        "浅海愛"
+      ]
+    },
+    {
+      "entryNo": 84,
+      "name": "山本有理",
+      "teachers": [
+        "浅海愛"
+      ]
+    },
+    {
+      "entryNo": 85,
+      "name": "園部ひろ子",
+      "teachers": [
+        "勝野出"
+      ]
+    },
+    {
+      "entryNo": 86,
+      "name": "平松静江",
+      "teachers": [
+        "勝野出"
+      ]
+    },
+    {
+      "entryNo": 87,
+      "name": "高橋美枝子",
+      "teachers": [
+        "山本章格"
+      ]
+    },
+    {
+      "entryNo": 88,
+      "name": "近藤まゆみ",
+      "teachers": [
+        "松下学"
+      ]
+    },
+    {
+      "entryNo": 89,
+      "name": "大西智爽音",
+      "teachers": [
+        "中野雅章"
+      ]
+    },
+    {
+      "entryNo": 90,
+      "name": "北村円",
+      "teachers": [
+        "梟岩茉莉那"
+      ]
+    },
+    {
+      "entryNo": 91,
+      "name": "中村安寿",
+      "teachers": [
+        "河合祐介"
+      ]
+    },
+    {
+      "entryNo": 92,
+      "name": "大河内久美代",
+      "teachers": [
+        "河合祐介"
+      ]
+    },
+    {
+      "entryNo": 93,
+      "name": "東代采子",
+      "teachers": [
+        "山本武"
+      ]
+    },
+    {
+      "entryNo": 94,
+      "name": "星野京子",
+      "teachers": [
+        "森田貴久"
+      ]
+    },
+    {
+      "entryNo": 95,
+      "name": "伊藤有希",
+      "teachers": [
+        "瀬内英幸"
+      ]
+    },
+    {
+      "entryNo": 96,
+      "name": "小川千枝",
+      "teachers": [
+        "矢口学"
+      ]
+    },
+    {
+      "entryNo": 97,
+      "name": "牧野正子",
+      "teachers": [
+        "森田貴久"
+      ]
+    },
+    {
+      "entryNo": 98,
+      "name": "樋口淳子",
+      "teachers": [
+        "松下学"
+      ]
+    },
+    {
+      "entryNo": 99,
+      "name": "中嶋真紀",
+      "teachers": [
+        "浜野義広"
+      ]
+    },
+    {
+      "entryNo": 100,
+      "name": "丹羽三千代",
+      "teachers": [
+        "浜野義広"
+      ]
+    },
+    {
+      "entryNo": 101,
+      "name": "丸山美樹",
+      "teachers": [
+        "浜野義広"
+      ]
+    },
+    {
+      "entryNo": 102,
+      "name": "りえ子",
+      "teachers": [
+        "浅村慎太郎"
+      ]
+    },
+    {
+      "entryNo": 104,
+      "name": "秋山淳子",
+      "teachers": [
+        "黒野朝洋"
+      ]
+    },
+    {
+      "entryNo": 105,
+      "name": "児山米子",
+      "teachers": [
+        "黒野朝洋"
+      ]
+    },
+    {
+      "entryNo": 106,
+      "name": "金原幸江",
+      "teachers": [
+        "山田佳奈",
+        "黒野朝洋"
+      ]
+    },
+    {
+      "entryNo": 107,
+      "name": "松井裕波",
+      "teachers": [
+        "山本武",
+        "川東慎太郎"
+      ]
+    },
+    {
+      "entryNo": 108,
+      "name": "関ゆきえ",
+      "teachers": [
+        "澤井優也"
+      ]
+    },
+    {
+      "entryNo": 109,
+      "name": "梶浦暎子",
+      "teachers": [
+        "澤井優也"
+      ]
+    },
+    {
+      "entryNo": 110,
+      "name": "伊野波皆子",
+      "teachers": [
+        "澤井優也"
+      ]
+    },
+    {
+      "entryNo": 111,
+      "name": "今村和枝",
+      "teachers": [
+        "澤井優也"
+      ]
+    },
+    {
+      "entryNo": 112,
+      "name": "松井良美",
+      "teachers": [
+        "河合祐介"
+      ]
+    },
+    {
+      "entryNo": 113,
+      "name": "佐藤長宣",
+      "teachers": [
+        "岡瑞紀"
+      ]
+    },
+    {
+      "entryNo": 114,
+      "name": "近藤吉実",
+      "teachers": [
+        "大塚まい",
+        "岡ひろみ"
+      ]
+    },
+    {
+      "entryNo": 115,
+      "name": "飯見聡子",
+      "teachers": [
+        "松村光"
+      ]
+    },
+    {
+      "entryNo": 116,
+      "name": "中野京子",
+      "teachers": [
+        "松村光"
+      ]
+    },
+    {
+      "entryNo": 118,
+      "name": "寺本恵",
+      "teachers": [
+        "松村光"
+      ]
+    },
+    {
+      "entryNo": 119,
+      "name": "森下敏昭",
+      "teachers": [
+        "安東ニシャ"
+      ]
+    },
+    {
+      "entryNo": 120,
+      "name": "杉浦富貴絵",
+      "teachers": [
+        "田川貴一"
+      ]
+    },
+    {
+      "entryNo": 121,
+      "name": "寺田悦子",
+      "teachers": [
+        "加地卓"
+      ]
+    },
+    {
+      "entryNo": 122,
+      "name": "門脇有里",
+      "teachers": [
+        "村田佳澄"
+      ]
+    },
+    {
+      "entryNo": 123,
+      "name": "渡邊徳一",
+      "teachers": [
+        "安東ニシャ"
+      ]
+    },
+    {
+      "entryNo": 124,
+      "name": "筒井幹子",
+      "teachers": [
+        "梟岩茉莉那"
+      ]
+    },
+    {
+      "entryNo": 125,
+      "name": "山本美憂",
+      "teachers": [
+        "ソロ"
+      ]
+    },
+    {
+      "entryNo": 126,
+      "name": "中垣楓乃",
+      "teachers": [
+        "ソロ"
+      ]
+    },
+    {
+      "entryNo": 127,
+      "name": "浦勇慶子",
+      "teachers": [
+        "髙槻華那太"
+      ]
+    },
+    {
+      "entryNo": 128,
+      "name": "松田恵梨奈",
+      "teachers": [
+        "河辺和輝"
+      ]
+    },
+    {
+      "entryNo": 129,
+      "name": "服部百花",
+      "teachers": [
+        "ソロ"
+      ]
+    },
+    {
+      "entryNo": 130,
+      "name": "吉田哲人",
+      "teachers": [
+        "三喜真梨菜"
+      ]
+    },
+    {
+      "entryNo": 131,
+      "name": "小山内結",
+      "teachers": [
+        "ソロ"
+      ]
+    },
+    {
+      "entryNo": 132,
+      "name": "辻本寛",
+      "teachers": [
+        "伊熊詩繊"
+      ]
+    }
+  ],
   "rows": [
     {
       "time": "8:30",
@@ -9073,14 +10045,23 @@ window.__SCHEDULE_DATA__ = {
 <script>
 const SCHEDULE = window.__SCHEDULE_DATA__;
 const EVENT_ID = SCHEDULE.eventId || "event";
-const FAV_KEY = "navi_fav_" + EVENT_ID;
+const FAV_KEY_LEGACY = "navi_fav_" + EVENT_ID; // old: array of STUDENTS nicknames
+const FAV_KEY = "navi_fav_entrynos_" + EVENT_ID; // new: array of entryNo numbers
 const DRIFT_KEY = "navi_drift_" + EVENT_ID;
 const THEME_KEY = "navi_theme_" + EVENT_ID;
 
 const rows = SCHEDULE.rows;
 const students = SCHEDULE.students;
+const PARTICIPANTS = SCHEDULE.participants || [];
+const PARTICIPANT_BY_ENTRY = {};
+PARTICIPANTS.forEach((p) => {
+  PARTICIPANT_BY_ENTRY[p.entryNo] = p;
+});
 
-let favStudents = loadFav();
+// お気に入りは「特定の3〜4人を固定で追う」方式から、「出場者一覧から誰でも
+// 背番号／教師名で検索して★登録する」方式に変更。保存も名前ベースから
+// entryNo（背番号）ベースに変更し、以前の名前ベースの登録は自動移行する。
+let favEntryNos = loadFav();
 let drift = loadDrift();
 let activeTab = "fav";
 let openSections = new Set();
@@ -9088,14 +10069,32 @@ let openSections = new Set();
 function loadFav() {
   try {
     const raw = localStorage.getItem(FAV_KEY);
-    return raw ? new Set(JSON.parse(raw)) : new Set();
+    if (raw) return new Set(JSON.parse(raw).map(Number));
   } catch (e) {
-    return new Set();
+    // fall through to legacy migration
   }
+  // migrate legacy name-based favorites (毛受様 等) to entryNo-based storage
+  try {
+    const legacyRaw = localStorage.getItem(FAV_KEY_LEGACY);
+    if (legacyRaw) {
+      const legacyNames = JSON.parse(legacyRaw);
+      const migrated = legacyNames
+        .map((name) => students[name] && students[name].entryNo)
+        .filter((n) => n != null);
+      if (migrated.length) {
+        const set = new Set(migrated);
+        try {
+          localStorage.setItem(FAV_KEY, JSON.stringify([...set]));
+        } catch (e2) {}
+        return set;
+      }
+    }
+  } catch (e) {}
+  return new Set();
 }
 function saveFav() {
   try {
-    localStorage.setItem(FAV_KEY, JSON.stringify([...favStudents]));
+    localStorage.setItem(FAV_KEY, JSON.stringify([...favEntryNos]));
   } catch (e) {}
 }
 function loadDrift() {
@@ -9232,48 +10231,79 @@ function renderDriftBanner() {
 // ---- kind badges ----
 const ROUND_LABEL = { 予選: "予選", 決勝: "決勝" };
 
-function studentBadgesHtml(list, opts) {
-  if (!list || list.length === 0) return "";
+// Generic favorite lookup: works for ANY participant (not just the historically
+// tracked STUDENTS), driven entirely by favEntryNos + each row's sectionRoster
+// (built from the full official heat sheet). Falls back to the row's baked
+// `students` list (name+entryNo) for kinds without a sectionRoster — currently
+// only the award-ceremony blocks, which are manually tagged in build_data.py.
+function rowFavoriteEntries(row) {
+  const result = [];
+  if (row.sectionRoster) {
+    row.sectionRoster.forEach((g) => {
+      g.entries.forEach((e) => {
+        if (favEntryNos.has(e.entryNo)) {
+          result.push({
+            entryNo: e.entryNo,
+            name: e.name,
+            teacher: e.teacher,
+            heatLabel: g.heatLabel,
+            groups: g.entries.length,
+          });
+        }
+      });
+    });
+  }
+  if (row.students) {
+    row.students.forEach((s) => {
+      if (favEntryNos.has(s.entryNo) && !result.some((r) => r.entryNo === s.entryNo)) {
+        const info = students[s.name];
+        result.push({
+          entryNo: s.entryNo,
+          name: info ? info.fullName : s.name,
+          teacher: null,
+          heatLabel: s.heatLabel,
+          groups: s.groups,
+        });
+      }
+    });
+  }
+  return result;
+}
+
+function rowHasFavorite(row) {
+  return rowFavoriteEntries(row).length > 0;
+}
+
+function favoriteBadgesHtml(entries, opts) {
+  if (!entries || entries.length === 0) return "";
   const showHeat = opts && opts.showHeat;
-  return list
-    .map((entry) => {
-      const name = entry.name;
-      const s = students[name];
-      const bg = s ? s.colorSoft : "#eee";
-      const fg = s ? s.color : "#666";
-      const heatSuffix = showHeat && entry.heatLabel ? ` ${entry.heatLabel}` : "";
-      return `<span class="student-badge" style="background:${bg};color:${fg};border-color:${fg}33">${esc(name)}${esc(heatSuffix)}</span>`;
+  return entries
+    .map((e) => {
+      const heatSuffix = showHeat && e.heatLabel ? ` ${e.heatLabel}` : "";
+      return `<span class="student-badge fav-badge">★ ${esc(e.name)}${esc(heatSuffix)}</span>`;
     })
     .join("");
 }
 
-function rosterHtml(relevantStudents) {
-  const withRoster = relevantStudents.filter((s) => s.roster && s.roster.length);
-  if (withRoster.length === 0) return "";
-  return withRoster
-    .map((s) => {
-      const rows = s.roster
+function liveRosterHtml(row) {
+  if (!row.sectionRoster || row.sectionRoster.length === 0) return "";
+  const groups = row.sectionRoster
+    .map((g) => {
+      const entries = g.entries
         .map((e) => {
-          const isSelf = e.entryNo === s.entryNo;
-          return `<div class="roster-row ${isSelf ? "self" : ""}">
+          const isFav = favEntryNos.has(e.entryNo);
+          return `<div class="roster-row ${isFav ? "self" : ""}">
             <span class="roster-no">${esc(e.entryNo)}</span>
-            <span class="roster-name">${esc(e.name)}</span>
+            <span class="roster-name">${esc(e.name)}${isFav ? '<span class="roster-tag">★</span>' : ""}</span>
             <span class="roster-teacher">${esc(e.teacher)}</span>
           </div>`;
         })
         .join("");
-      return `<details class="roster-details">
-        <summary>${esc(s.name)}の${esc(s.heatLabel)}（同ヒートの出場者）</summary>
-        <div class="roster-list">${rows}</div>
-      </details>`;
+      return `<div class="roster-group-label">${esc(g.heatLabel)}</div><div class="roster-list">${entries}</div>`;
     })
     .join("");
+  return `<div class="live-roster-inline">${groups}</div>`;
 }
-
-const ENTRY_NO_TO_STUDENT = {};
-Object.keys(students).forEach((name) => {
-  ENTRY_NO_TO_STUDENT[students[name].entryNo] = name;
-});
 
 function sectionRosterHtml(row, q, autoExpand) {
   if (!row.sectionRoster || row.sectionRoster.length === 0) return "";
@@ -9282,18 +10312,18 @@ function sectionRosterHtml(row, q, autoExpand) {
     .map((g) => {
       const entries = g.entries
         .map((e) => {
-          const studentName = ENTRY_NO_TO_STUDENT[e.entryNo];
-          const isTracked = !!studentName;
+          const isFav = favEntryNos.has(e.entryNo);
           const isMatch =
             !!q &&
             (e.name.includes(q) ||
               String(e.entryNo).includes(q) ||
               (e.teacher && e.teacher.includes(q)));
           if (isMatch) matched = true;
-          return `<div class="roster-row ${isTracked ? "self" : ""} ${isMatch ? "match" : ""}">
+          return `<div class="roster-row ${isFav ? "self" : ""} ${isMatch ? "match" : ""}">
             <span class="roster-no">${esc(e.entryNo)}</span>
-            <span class="roster-name">${esc(e.name)}${isTracked ? `<span class="roster-tag">${esc(studentName)}</span>` : ""}</span>
+            <span class="roster-name">${esc(e.name)}${isFav ? '<span class="roster-tag">★</span>' : ""}</span>
             <span class="roster-teacher">${esc(e.teacher)}</span>
+            <button class="roster-fav-btn ${isFav ? "active" : ""}" data-fav-entry="${esc(e.entryNo)}" title="お気に入り登録・解除">${isFav ? "★" : "☆"}</button>
           </div>`;
         })
         .join("");
@@ -9335,62 +10365,57 @@ function favSortKey(row, nowMin) {
   return 100000 + end;
 }
 
-function toggleFavStudent(name) {
-  if (favStudents.has(name)) favStudents.delete(name);
-  else favStudents.add(name);
+function toggleFavEntry(entryNo) {
+  entryNo = Number(entryNo);
+  if (favEntryNos.has(entryNo)) favEntryNos.delete(entryNo);
+  else favEntryNos.add(entryNo);
   saveFav();
-  renderStudentChips();
+  const participantSearchEl = document.getElementById("participantSearch");
+  renderParticipantsPanel(participantSearchEl ? participantSearchEl.value : "");
   renderFavPanel();
   renderNextUpBar();
+  const timetableSearchEl = document.getElementById("timetableSearch");
+  if (timetableSearchEl) renderTimetablePanel(timetableSearchEl.value);
 }
 
-function renderStudentChips() {
-  const el = document.getElementById("studentChips");
-  if (!el) return;
-  el.innerHTML = Object.keys(students)
-    .map((name) => {
-      const s = students[name];
-      const active = favStudents.has(name);
-      return `<button class="student-chip ${active ? "active" : ""}" data-student="${esc(name)}"
-        style="--chip-color:${s.color};--chip-soft:${s.colorSoft}">
-        <span class="chip-star">${active ? "★" : "☆"}</span> ${esc(name)}
-      </button>`;
-    })
-    .join("");
-  el.querySelectorAll(".student-chip").forEach((btn) => {
-    btn.addEventListener("click", () => toggleFavStudent(btn.dataset.student));
+// list of {row, favEntries} for every heat row that currently has at least one
+// favorited participant, sorted soonest-first (in progress, then upcoming, then past)
+function computeFavoriteRows(nowMin) {
+  const matched = [];
+  rows.forEach((r) => {
+    if (r.kind !== "heat") return;
+    const favEntries = rowFavoriteEntries(r);
+    if (favEntries.length) matched.push({ row: r, favEntries });
   });
+  matched.sort((a, b) => favSortKey(a.row, nowMin) - favSortKey(b.row, nowMin));
+  return matched;
 }
 
 function renderFavPanel() {
   const panel = document.getElementById("panelFavList");
   if (!panel) return;
   const nowMin = nowMinutes();
-  if (favStudents.size === 0) {
-    panel.innerHTML = `<div class="empty-state">まだお気に入りが登録されていません。上で応援したい生徒様を選んでください。<br>★マークで選択できます。</div>`;
+  if (favEntryNos.size === 0) {
+    panel.innerHTML = `<div class="empty-state">まだお気に入りが登録されていません。「出場者」タブで背番号や名前・教師名から検索して★を押してください。</div>`;
     return;
   }
-  const matched = rows.filter(
-    (r) => r.kind === "heat" && r.students.some((s) => favStudents.has(s.name))
-  );
-  matched.sort((a, b) => favSortKey(a, nowMin) - favSortKey(b, nowMin));
+  const matched = computeFavoriteRows(nowMin);
   if (matched.length === 0) {
-    panel.innerHTML = `<div class="empty-state">選択した生徒様が出場するヒートが見つかりませんでした。</div>`;
+    panel.innerHTML = `<div class="empty-state">お気に入り登録した出場者が出場するヒートが見つかりませんでした。</div>`;
     return;
   }
   panel.innerHTML = matched
-    .map((r) => {
+    .map(({ row: r, favEntries }) => {
       const cd = countdownText(r);
-      const relevantStudents = r.students.filter((s) => favStudents.has(s.name));
-      const heatDetail = relevantStudents
-        .filter((s) => s.heatLabel)
-        .map((s) => `${esc(s.name)}：${esc(s.heatLabel)}（${s.groups}組中）　No.${esc(s.entryNo)}`)
+      const heatDetail = favEntries
+        .filter((e) => e.heatLabel)
+        .map((e) => `${esc(e.name)}：${esc(e.heatLabel)}（${e.groups}組中）　No.${esc(e.entryNo)}`)
         .join("　");
       return `
       <div class="fav-card ${cd.cls === "now" ? "is-now" : ""}">
         <div class="fav-time">${fmtClock(adjusted(r.startAbs))}</div>
         <div class="fav-body">
-          <div class="fav-meta">${roundBadgeHtml(r.round)} ${studentBadgesHtml(relevantStudents, { showHeat: true })}</div>
+          <div class="fav-meta">${roundBadgeHtml(r.round)} ${favoriteBadgesHtml(favEntries, { showHeat: true })}</div>
           <div class="fav-title">${esc(r.label)}　<span class="fav-style">${esc(r.style)}</span></div>
           <div class="fav-sub">${esc(r.heats || "")}</div>
           ${heatDetail ? `<div class="fav-heatdetail">${heatDetail}</div>` : ""}
@@ -9405,6 +10430,57 @@ function renderFavPanel() {
       const row = rows.find((r) => r.id === btn.dataset.sync);
       if (row) syncToRow(row);
     });
+  });
+}
+
+// ---- participants tab (出場者一覧: search by name / entryNo / teacher, favorite anyone) ----
+function participantMatchesQuery(p, q) {
+  if (!q) return true;
+  return (
+    p.name.includes(q) ||
+    String(p.entryNo).includes(q) ||
+    p.teachers.some((t) => t.includes(q))
+  );
+}
+
+function renderParticipantsPanel(filterText) {
+  const panel = document.getElementById("participantList");
+  if (!panel) return;
+  const countEl = document.getElementById("participantSearchCount");
+  const q = (filterText || "").trim();
+  const filtered = PARTICIPANTS.filter((p) => participantMatchesQuery(p, q));
+
+  if (countEl) {
+    countEl.style.display = "block";
+    if (q) {
+      countEl.textContent = filtered.length > 0 ? `${filtered.length}件ヒット` : "該当する出場者が見つかりません";
+    } else {
+      countEl.textContent = `全${PARTICIPANTS.length}名　お気に入り${favEntryNos.size}名`;
+    }
+  }
+
+  if (filtered.length === 0) {
+    panel.innerHTML = `<div class="empty-state">該当する出場者が見つかりません。</div>`;
+    return;
+  }
+
+  panel.innerHTML = filtered
+    .map((p) => {
+      const isFav = favEntryNos.has(p.entryNo);
+      return `<div class="participant-row ${isFav ? "is-fav" : ""}">
+        <span class="participant-no">${esc(p.entryNo)}</span>
+        <div class="participant-body">
+          <div class="participant-name">${esc(p.name)}</div>
+          <div class="participant-teacher">${esc(p.teachers.join("／"))}</div>
+        </div>
+        <button class="participant-fav-btn ${isFav ? "active" : ""}" data-fav-entry="${esc(p.entryNo)}" title="お気に入り登録・解除">
+          ${isFav ? "★" : "☆"}
+        </button>
+      </div>`;
+    })
+    .join("");
+  panel.querySelectorAll(".participant-fav-btn").forEach((btn) => {
+    btn.addEventListener("click", () => toggleFavEntry(btn.dataset.favEntry));
   });
 }
 
@@ -9436,25 +10512,25 @@ function buildSections() {
 const SECTIONS = buildSections();
 
 function timetableRowHtml(r, q, autoExpand) {
+  const favEntries = rowFavoriteEntries(r);
+  const hasFav = favEntries.length > 0;
   if (r.kind === "block") {
-    const hasStudents = r.students && r.students.length > 0;
-    return `<div class="tt-block ${hasStudents ? "highlight" : ""}">
+    return `<div class="tt-block ${hasFav ? "highlight" : ""}">
       <div class="tt-time">${fmtClock(adjusted(r.startAbs))}</div>
       <div class="tt-block-label">${esc(r.label)}</div>
-      <div class="tt-badges">${studentBadgesHtml(r.students)}</div>
+      <div class="tt-badges">${favoriteBadgesHtml(favEntries)}</div>
       <button class="sync-btn small" data-sync="${r.id}" title="今ここを基準に時刻を補正">📍</button>
     </div>`;
   }
-  const hasStudents = r.students && r.students.length > 0;
   return `<div class="tt-item">
-    <div class="tt-row ${hasStudents ? "highlight" : ""}">
+    <div class="tt-row ${hasFav ? "highlight" : ""}">
       <div class="tt-time">${fmtClock(adjusted(r.startAbs))}</div>
       <div class="tt-main">
         <span class="tt-label">${esc(r.label)}</span>
         <span class="tt-style">${esc(r.style)}</span>
       </div>
       <div class="tt-heats">${esc(r.heats || "")}</div>
-      <div class="tt-badges">${studentBadgesHtml(r.students)}</div>
+      <div class="tt-badges">${favoriteBadgesHtml(favEntries)}</div>
       <button class="sync-btn small" data-sync="${r.id}" title="今ここを基準に時刻を補正">📍</button>
     </div>
     ${sectionRosterHtml(r, q, autoExpand)}
@@ -9546,6 +10622,9 @@ function renderTimetablePanel(filterText) {
       if (row) syncToRow(row);
     });
   });
+  panel.querySelectorAll(".roster-fav-btn").forEach((btn) => {
+    btn.addEventListener("click", () => toggleFavEntry(btn.dataset.favEntry));
+  });
 }
 
 // ---- current / live tab ----
@@ -9569,6 +10648,7 @@ function renderCurrentPanel() {
   let liveHtml = "";
   if (current) {
     const isHeat = current.kind === "heat";
+    const favEntries = rowFavoriteEntries(current);
     liveHtml = `
       <div class="live-card">
         <div class="live-dot"></div>
@@ -9576,8 +10656,8 @@ function renderCurrentPanel() {
         <div class="live-time">${fmtClock(adjusted(current.startAbs))}〜${fmtClock(adjusted(current.endAbs))}</div>
         <div class="live-title">${esc(current.label)}${isHeat ? "　" + esc(current.style) : ""}</div>
         ${isHeat ? `<div class="live-heats">${esc(current.heats || "")}</div>` : ""}
-        <div class="live-badges">${roundBadgeHtml(current.round)} ${studentBadgesHtml(current.students, { showHeat: true })}</div>
-        ${current.students && current.students.length ? `<div class="live-roster">${rosterHtml(current.students)}</div>` : ""}
+        <div class="live-badges">${roundBadgeHtml(current.round)} ${favoriteBadgesHtml(favEntries, { showHeat: true })}</div>
+        ${favEntries.length ? `<div class="live-roster">${liveRosterHtml(current)}</div>` : ""}
         <button class="sync-btn" data-sync="${current.id}" title="今ここを基準に時刻を補正">📍今ここ</button>
       </div>`;
   } else {
@@ -9594,7 +10674,7 @@ function renderCurrentPanel() {
         <div class="upcoming-body">
           <span class="upcoming-title">${esc(m.label)}${isHeat ? "　" + esc(m.style) : ""}</span>
           ${roundBadgeHtml(m.round)}
-          ${studentBadgesHtml(m.students, { showHeat: true })}
+          ${favoriteBadgesHtml(rowFavoriteEntries(m), { showHeat: true })}
         </div>
       </div>`;
     })
@@ -9616,21 +10696,19 @@ function renderCurrentPanel() {
 function renderNextUpBar() {
   const el = document.getElementById("nextUpBar");
   if (!el) return;
-  if (favStudents.size === 0) {
+  if (favEntryNos.size === 0) {
     el.style.display = "none";
     return;
   }
   const nowMin = nowMinutes();
-  const matched = rows.filter(
-    (r) => r.kind === "heat" && r.students.some((s) => favStudents.has(s.name))
+  const upcomingEntry = computeFavoriteRows(nowMin).find(
+    ({ row: r }) => adjusted(r.endAbs) > nowMin
   );
-  const upcoming = matched
-    .filter((r) => adjusted(r.endAbs) > nowMin)
-    .sort((a, b) => favSortKey(a, nowMin) - favSortKey(b, nowMin))[0];
-  if (!upcoming) {
+  if (!upcomingEntry) {
     el.style.display = "none";
     return;
   }
+  const upcoming = upcomingEntry.row;
   const cd = countdownText(upcoming);
   el.style.display = "flex";
   el.innerHTML = `<span class="nextup-label">次の出番</span> <span class="nextup-title">${esc(
@@ -9641,6 +10719,7 @@ function renderNextUpBar() {
 function refreshAllDisplays() {
   renderFavPanel();
   renderTimetablePanel(document.getElementById("timetableSearch") ? document.getElementById("timetableSearch").value : "");
+  renderParticipantsPanel(document.getElementById("participantSearch") ? document.getElementById("participantSearch").value : "");
   renderCurrentPanel();
   renderNextUpBar();
 }
@@ -9656,6 +10735,7 @@ function setActiveTab(tab) {
   });
   if (tab === "fav") renderFavPanel();
   if (tab === "timetable") renderTimetablePanel(document.getElementById("timetableSearch").value);
+  if (tab === "participants") renderParticipantsPanel(document.getElementById("participantSearch").value);
   if (tab === "current") renderCurrentPanel();
 }
 function capitalize(s) {
@@ -9752,13 +10832,16 @@ function init() {
     b.addEventListener("click", () => setActiveTab(b.dataset.tab));
   });
 
-  renderStudentChips();
   renderDriftBanner();
   setActiveTab("fav");
 
   const searchEl = document.getElementById("timetableSearch");
   if (searchEl) {
     searchEl.addEventListener("input", () => renderTimetablePanel(searchEl.value));
+  }
+  const participantSearchEl = document.getElementById("participantSearch");
+  if (participantSearchEl) {
+    participantSearchEl.addEventListener("input", () => renderParticipantsPanel(participantSearchEl.value));
   }
 
   initBackToTop();
