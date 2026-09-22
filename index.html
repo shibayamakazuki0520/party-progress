@@ -262,6 +262,21 @@ header{
   color: var(--wine-deep);
   border-color: var(--wine-deep)33;
 }
+.fav-badge.removable{
+  cursor: pointer;
+  font-family: inherit;
+  -webkit-tap-highlight-color: transparent;
+}
+.fav-badge.removable:active{
+  background: var(--wine-deep);
+  color: #fff;
+}
+
+.fav-hint{
+  font-size: 11px;
+  color: var(--ink-soft);
+  margin: -4px 2px 10px;
+}
 
 .live-roster-inline{ margin-top: 6px; }
 
@@ -10277,9 +10292,13 @@ function rowHasFavorite(row) {
 function favoriteBadgesHtml(entries, opts) {
   if (!entries || entries.length === 0) return "";
   const showHeat = opts && opts.showHeat;
+  const removable = opts && opts.removable;
   return entries
     .map((e) => {
       const heatSuffix = showHeat && e.heatLabel ? ` ${e.heatLabel}` : "";
+      if (removable) {
+        return `<button type="button" class="student-badge fav-badge removable" data-fav-entry="${esc(e.entryNo)}" title="タップしてお気に入り解除">★ ${esc(e.name)}${esc(heatSuffix)} ✕</button>`;
+      }
       return `<span class="student-badge fav-badge">★ ${esc(e.name)}${esc(heatSuffix)}</span>`;
     })
     .join("");
@@ -10365,17 +10384,31 @@ function favSortKey(row, nowMin) {
   return 100000 + end;
 }
 
-function toggleFavEntry(entryNo) {
-  entryNo = Number(entryNo);
-  if (favEntryNos.has(entryNo)) favEntryNos.delete(entryNo);
-  else favEntryNos.add(entryNo);
-  saveFav();
+function refreshFavoriteDependentUI() {
   const participantSearchEl = document.getElementById("participantSearch");
   renderParticipantsPanel(participantSearchEl ? participantSearchEl.value : "");
   renderFavPanel();
   renderNextUpBar();
   const timetableSearchEl = document.getElementById("timetableSearch");
   if (timetableSearchEl) renderTimetablePanel(timetableSearchEl.value);
+}
+
+function toggleFavEntry(entryNo) {
+  entryNo = Number(entryNo);
+  if (favEntryNos.has(entryNo)) {
+    const p = PARTICIPANT_BY_ENTRY[entryNo];
+    const label = p ? `${p.name}（No.${p.entryNo}）` : `No.${entryNo}`;
+    showConfirm(`${label}をお気に入りから解除しますか？`).then((confirmed) => {
+      if (!confirmed) return;
+      favEntryNos.delete(entryNo);
+      saveFav();
+      refreshFavoriteDependentUI();
+    });
+    return;
+  }
+  favEntryNos.add(entryNo);
+  saveFav();
+  refreshFavoriteDependentUI();
 }
 
 // list of {row, favEntries} for every heat row that currently has at least one
@@ -10400,22 +10433,25 @@ function renderFavPanel() {
     return;
   }
   const matched = computeFavoriteRows(nowMin);
+  const hintHtml = `<div class="fav-hint">★のバッジをタップすると、その場でお気に入りを解除できます</div>`;
   if (matched.length === 0) {
-    panel.innerHTML = `<div class="empty-state">お気に入り登録した出場者が出場するヒートが見つかりませんでした。</div>`;
+    panel.innerHTML = hintHtml + `<div class="empty-state">お気に入り登録した出場者が出場するヒートが見つかりませんでした。</div>`;
     return;
   }
-  panel.innerHTML = matched
-    .map(({ row: r, favEntries }) => {
-      const cd = countdownText(r);
-      const heatDetail = favEntries
-        .filter((e) => e.heatLabel)
-        .map((e) => `${esc(e.name)}：${esc(e.heatLabel)}（${e.groups}組中）　No.${esc(e.entryNo)}`)
-        .join("　");
-      return `
+  panel.innerHTML =
+    hintHtml +
+    matched
+      .map(({ row: r, favEntries }) => {
+        const cd = countdownText(r);
+        const heatDetail = favEntries
+          .filter((e) => e.heatLabel)
+          .map((e) => `${esc(e.name)}：${esc(e.heatLabel)}（${e.groups}組中）　No.${esc(e.entryNo)}`)
+          .join("　");
+        return `
       <div class="fav-card ${cd.cls === "now" ? "is-now" : ""}">
         <div class="fav-time">${fmtClock(adjusted(r.startAbs))}</div>
         <div class="fav-body">
-          <div class="fav-meta">${roundBadgeHtml(r.round)} ${favoriteBadgesHtml(favEntries, { showHeat: true })}</div>
+          <div class="fav-meta">${roundBadgeHtml(r.round)} ${favoriteBadgesHtml(favEntries, { showHeat: true, removable: true })}</div>
           <div class="fav-title">${esc(r.label)}　<span class="fav-style">${esc(r.style)}</span></div>
           <div class="fav-sub">${esc(r.heats || "")}</div>
           ${heatDetail ? `<div class="fav-heatdetail">${heatDetail}</div>` : ""}
@@ -10423,13 +10459,16 @@ function renderFavPanel() {
         <div class="fav-countdown ${cd.cls}">${cd.text}</div>
         <button class="sync-btn" data-sync="${r.id}" title="今ここを基準に時刻を補正">📍</button>
       </div>`;
-    })
-    .join("");
+      })
+      .join("");
   panel.querySelectorAll(".sync-btn").forEach((btn) => {
     btn.addEventListener("click", () => {
       const row = rows.find((r) => r.id === btn.dataset.sync);
       if (row) syncToRow(row);
     });
+  });
+  panel.querySelectorAll(".fav-badge.removable").forEach((btn) => {
+    btn.addEventListener("click", () => toggleFavEntry(btn.dataset.favEntry));
   });
 }
 
